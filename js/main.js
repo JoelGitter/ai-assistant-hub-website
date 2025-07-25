@@ -392,7 +392,7 @@ function initStripeCheckout() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        priceId: 'price_pro_monthly', // Replace with your actual price ID
+                        priceId: 'price_1RoncBI5JHWOZqzkIHwOtcix', // Pro Monthly
                         successUrl: window.location.origin + '/success.html',
                         cancelUrl: window.location.origin + '/#pricing'
                     })
@@ -449,7 +449,7 @@ function initStripeCheckout() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        priceId: 'price_pro_yearly', // Replace with your actual price ID
+                        priceId: 'price_1RoncBI5JHWOZqzkGCIS5oFm', // Pro Yearly
                         successUrl: window.location.origin + '/success.html',
                         cancelUrl: window.location.origin + '/#pricing'
                     })
