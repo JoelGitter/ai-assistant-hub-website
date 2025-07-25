@@ -46,6 +46,9 @@
         gtag('js', new Date());
         gtag('config', 'G-BNQRGZZEHK');
     </script>
+    
+    <!-- Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -273,9 +276,9 @@
                         <li><i class="fas fa-check"></i> Usage analytics</li>
                         <li><i class="fas fa-check"></i> Priority support</li>
                     </ul>
-                    <a href="#contact" class="btn btn-primary">
+                    <button class="btn btn-primary" id="pro-plan-btn" data-plan="pro-monthly">
                         Upgrade to Pro
-                    </a>
+                    </button>
                 </div>
                 <div class="pricing-card">
                     <div class="pricing-header">
@@ -293,9 +296,9 @@
                         <li><i class="fas fa-check"></i> Early access to features</li>
                         <li><i class="fas fa-check"></i> Dedicated support</li>
                     </ul>
-                    <a href="#contact" class="btn btn-outline">
+                    <button class="btn btn-outline" id="pro-annual-btn" data-plan="pro-yearly">
                         Choose Annual
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>

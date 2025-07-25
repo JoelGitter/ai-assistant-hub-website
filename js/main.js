@@ -371,9 +371,131 @@ function initPerformanceMonitoring() {
     }
 }
 
+// Stripe checkout functionality
+function initStripeCheckout() {
+    // Initialize Stripe with your publishable key
+    // Replace 'pk_test_your_publishable_key_here' with your actual publishable key
+    const stripe = Stripe('pk_test_your_publishable_key_here');
+    
+    // Pro Monthly Plan
+    const proMonthlyBtn = document.getElementById('pro-plan-btn');
+    if (proMonthlyBtn) {
+        proMonthlyBtn.addEventListener('click', async () => {
+            try {
+                // Show loading state
+                proMonthlyBtn.textContent = 'Loading...';
+                proMonthlyBtn.disabled = true;
+                
+                // Create checkout session
+                const response = await fetch('https://ai-assistant-hub-app.azurewebsites.net/api/billing/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        priceId: 'price_pro_monthly', // Replace with your actual price ID
+                        successUrl: window.location.origin + '/success.html',
+                        cancelUrl: window.location.origin + '/#pricing'
+                    })
+                });
+                
+                const session = await response.json();
+                
+                if (session.error) {
+                    throw new Error(session.error);
+                }
+                
+                // Redirect to Stripe Checkout
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.sessionId
+                });
+                
+                if (result.error) {
+                    throw new Error(result.error.message);
+                }
+                
+                // Track the event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'begin_checkout', {
+                        event_category: 'ecommerce',
+                        event_label: 'pro_monthly',
+                        value: 9.99
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showNotification('Unable to start checkout. Please try again.', 'error');
+                
+                // Reset button
+                proMonthlyBtn.textContent = 'Upgrade to Pro';
+                proMonthlyBtn.disabled = false;
+            }
+        });
+    }
+    
+    // Pro Annual Plan
+    const proAnnualBtn = document.getElementById('pro-annual-btn');
+    if (proAnnualBtn) {
+        proAnnualBtn.addEventListener('click', async () => {
+            try {
+                // Show loading state
+                proAnnualBtn.textContent = 'Loading...';
+                proAnnualBtn.disabled = true;
+                
+                // Create checkout session
+                const response = await fetch('https://ai-assistant-hub-app.azurewebsites.net/api/billing/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        priceId: 'price_pro_yearly', // Replace with your actual price ID
+                        successUrl: window.location.origin + '/success.html',
+                        cancelUrl: window.location.origin + '/#pricing'
+                    })
+                });
+                
+                const session = await response.json();
+                
+                if (session.error) {
+                    throw new Error(session.error);
+                }
+                
+                // Redirect to Stripe Checkout
+                const result = await stripe.redirectToCheckout({
+                    sessionId: session.sessionId
+                });
+                
+                if (result.error) {
+                    throw new Error(result.error.message);
+                }
+                
+                // Track the event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'begin_checkout', {
+                        event_category: 'ecommerce',
+                        event_label: 'pro_yearly',
+                        value: 99.90
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Checkout error:', error);
+                showNotification('Unable to start checkout. Please try again.', 'error');
+                
+                // Reset button
+                proAnnualBtn.textContent = 'Choose Annual';
+                proAnnualBtn.disabled = false;
+            }
+        });
+    }
+}
+
 // Initialize analytics and performance monitoring
 initAnalytics();
 initPerformanceMonitoring();
+initStripeCheckout();
 
 // Utility functions
 const utils = {
