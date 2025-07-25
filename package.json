@@ -1,0 +1,12 @@
+{
+  "name": "ai-assistant-hub-website",
+  "version": "1.0.0",
+  "description": "AI Assistant Hub - Professional website for Chrome extension",
+  "scripts": {
+    "build": "echo 'Static site - no build required'",
+    "deploy": "echo 'Static site - no build required'"
+  },
+  "keywords": ["ai", "chrome-extension", "website", "static"],
+  "author": "AI Assistant Hub",
+  "license": "MIT"
+} 
