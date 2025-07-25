@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "AI Assistant Hub - Professional website for Chrome extension",
   "scripts": {
-    "build": "echo 'Static site - no build required'",
-    "deploy": "echo 'Static site - no build required'"
+    "build": "node build-config.js production",
+    "build:dev": "node build-config.js development",
+    "deploy": "node build-config.js production && echo 'Static site ready for deployment'"
   },
   "keywords": ["ai", "chrome-extension", "website", "static"],
   "author": "AI Assistant Hub",

@@ -269,8 +269,8 @@ function initLazyLoading() {
 
 // Analytics tracking (Google Analytics 4)
 function initAnalytics() {
-    // Your actual GA4 measurement ID
-    const GA_MEASUREMENT_ID = 'G-BNQRGZZEHK';
+    // Get GA4 measurement ID from config
+    const GA_MEASUREMENT_ID = config.analytics.measurementId;
     
     if (GA_MEASUREMENT_ID) {
         // Google Analytics 4
@@ -373,8 +373,8 @@ function initPerformanceMonitoring() {
 
 // Stripe checkout functionality
 function initStripeCheckout() {
-    // Initialize Stripe with your publishable key
-    const stripe = Stripe('pk_live_51Rolv8I5JHWOZqzkQzDNnxsFw1q350Kqu0OdLBM9G1XKuhSXclErAds7w2qZ9g4HvUjqTnu2vVXI8vdNhLUBX9Dn00Y8s2BKkU');
+    // Initialize Stripe with your publishable key from config
+    const stripe = Stripe(config.stripe.publishableKey);
     
     // Pro Monthly Plan
     const proMonthlyBtn = document.getElementById('pro-plan-btn');
@@ -386,13 +386,13 @@ function initStripeCheckout() {
                 proMonthlyBtn.disabled = true;
                 
                 // Create checkout session
-                const response = await fetch('https://ai-assistant-hub-app.azurewebsites.net/api/billing/create-checkout-session', {
+                const response = await fetch(config.api.baseUrl + config.api.billingEndpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        priceId: 'price_1RoncBI5JHWOZqzkIHwOtcix', // Pro Monthly
+                        priceId: config.stripe.priceIds.proMonthly,
                         successUrl: window.location.origin + '/success.html',
                         cancelUrl: window.location.origin + '/#pricing'
                     })
@@ -443,13 +443,13 @@ function initStripeCheckout() {
                 proAnnualBtn.disabled = true;
                 
                 // Create checkout session
-                const response = await fetch('https://ai-assistant-hub-app.azurewebsites.net/api/billing/create-checkout-session', {
+                const response = await fetch(config.api.baseUrl + config.api.billingEndpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        priceId: 'price_1RoncBI5JHWOZqzkGCIS5oFm', // Pro Yearly
+                        priceId: config.stripe.priceIds.proYearly,
                         successUrl: window.location.origin + '/success.html',
                         cancelUrl: window.location.origin + '/#pricing'
                     })
