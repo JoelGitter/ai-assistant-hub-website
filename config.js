@@ -18,7 +18,7 @@ const config = {
     
     // API Endpoints
     api: {
-        baseUrl: 'https://ai-assistant-hub-app.azurewebsites.net',
+        baseUrl: 'https://myassistanthub.com',
         billingEndpoint: '/api/billing/create-checkout-session'
     },
     
