@@ -374,8 +374,7 @@ function initPerformanceMonitoring() {
 // Stripe checkout functionality
 function initStripeCheckout() {
     // Initialize Stripe with your publishable key
-    // Replace 'pk_test_your_publishable_key_here' with your actual publishable key
-    const stripe = Stripe('pk_test_your_publishable_key_here');
+    const stripe = Stripe('pk_live_51Rolv8I5JHWOZqzkQzDNnxsFw1q350Kqu0OdLBM9G1XKuhSXclErAds7w2qZ9g4HvUjqTnu2vVXI8vdNhLUBX9Dn00Y8s2BKkU');
     
     // Pro Monthly Plan
     const proMonthlyBtn = document.getElementById('pro-plan-btn');
