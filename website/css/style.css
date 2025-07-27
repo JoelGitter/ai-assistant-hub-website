@@ -347,21 +347,21 @@ p {
 }
 
 #card1 {
-    top: 30px;
-    left: 30px;
+    top: 20px;
+    left: 20px;
     animation-delay: 0s;
 }
 
 #card2 {
-    bottom: 30px;
-    right: 30px;
+    bottom: 20px;
+    right: 20px;
     animation-delay: 2s;
 }
 
 #card3 {
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    right: 20px;
+    transform: translateY(-50%);
     animation-delay: 4s;
 }
 
