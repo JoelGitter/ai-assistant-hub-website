@@ -320,32 +320,56 @@ p {
 
 .floating-card {
     position: absolute;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
     font-size: var(--font-size-sm);
-    font-weight: 500;
-    animation: float 4s ease-in-out infinite;
+    font-weight: 600;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: float 6s ease-in-out infinite;
+    z-index: 10;
 }
 
 .floating-card i {
-    color: var(--accent-color);
+    color: var(--primary-color);
+    font-size: 1.1em;
 }
 
 .card-1 {
-    top: 20%;
-    left: -10%;
+    top: 15%;
+    left: -15%;
     animation-delay: 0s;
 }
 
 .card-2 {
-    bottom: 20%;
-    right: -10%;
-    animation-delay: 2s;
+    bottom: 15%;
+    right: -15%;
+    animation-delay: 1.5s;
+}
+
+.card-3 {
+    top: 45%;
+    right: -20%;
+    animation-delay: 3s;
+}
+
+.card-4 {
+    bottom: 45%;
+    left: -20%;
+    animation-delay: 4.5s;
+}
+
+.card-5 {
+    top: 70%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 6s;
 }
 
 @keyframes float {
