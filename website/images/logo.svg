@@ -1,12 +1,46 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
-  <path d="M8 12h16v2H8v-2zm0 4h12v2H8v-2zm0 4h8v2H8v-2z" fill="white"/>
-  <circle cx="24" cy="10" r="3" fill="#fbbf24"/>
-  <path d="M22 10l1.5 1.5L26 9" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle with gradient -->
   <defs>
-    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f3f4f6;stop-opacity:1" />
     </linearGradient>
   </defs>
+  
+  <!-- Main background circle -->
+  <circle cx="24" cy="24" r="22" fill="url(#bgGradient)" stroke="#4f46e5" stroke-width="2"/>
+  
+  <!-- AI Brain/Neural Network representation -->
+  <g fill="url(#iconGradient)">
+    <!-- Central node -->
+    <circle cx="24" cy="24" r="3" fill="url(#iconGradient)"/>
+    
+    <!-- Connecting lines -->
+    <path d="M24 21 L24 18 M24 30 L24 27" stroke="url(#iconGradient)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M21 24 L18 24 M30 24 L27 24" stroke="url(#iconGradient)" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Outer nodes -->
+    <circle cx="24" cy="18" r="2"/>
+    <circle cx="24" cy="30" r="2"/>
+    <circle cx="18" cy="24" r="2"/>
+    <circle cx="30" cy="24" r="2"/>
+    
+    <!-- Diagonal connections -->
+    <path d="M21 21 L18 18" stroke="url(#iconGradient)" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M27 27 L30 30" stroke="url(#iconGradient)" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M27 21 L30 18" stroke="url(#iconGradient)" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M21 27 L18 30" stroke="url(#iconGradient)" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Sparkle effect -->
+  <g fill="#fbbf24">
+    <circle cx="12" cy="12" r="1" opacity="0.8"/>
+    <circle cx="36" cy="12" r="1" opacity="0.6"/>
+    <circle cx="12" cy="36" r="1" opacity="0.7"/>
+    <circle cx="36" cy="36" r="1" opacity="0.9"/>
+  </g>
 </svg> 
