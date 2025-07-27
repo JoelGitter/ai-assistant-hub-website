@@ -375,6 +375,18 @@ p {
     opacity: 1 !important;
 }
 
+/* Specifically override landscape orientation display: none */
+@media (max-height: 600px) and (orientation: landscape) {
+    .floating-card,
+    #card1,
+    #card2,
+    #card3 {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
