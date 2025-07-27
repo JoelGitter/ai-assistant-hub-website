@@ -342,31 +342,31 @@ p {
 }
 
 .card-1 {
-    top: 15%;
-    left: -15%;
+    top: 10%;
+    left: 10%;
     animation-delay: 0s;
 }
 
 .card-2 {
-    bottom: 15%;
-    right: -15%;
+    bottom: 10%;
+    right: 10%;
     animation-delay: 1.5s;
 }
 
 .card-3 {
-    top: 45%;
-    right: -20%;
+    top: 40%;
+    right: 5%;
     animation-delay: 3s;
 }
 
 .card-4 {
-    bottom: 45%;
-    left: -20%;
+    bottom: 40%;
+    left: 5%;
     animation-delay: 4.5s;
 }
 
 .card-5 {
-    top: 70%;
+    top: 60%;
     left: 50%;
     transform: translateX(-50%);
     animation-delay: 6s;
