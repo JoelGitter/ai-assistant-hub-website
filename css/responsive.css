@@ -89,10 +89,7 @@
         gap: var(--spacing-xl);
     }
     
-    .floating-card {
-        display: none;
-    }
-    
+  
     /* Features */
     .features-grid {
         grid-template-columns: 1fr;
@@ -227,9 +224,7 @@
         font-size: var(--font-size-sm);
     }
     
-    .floating-card {
-        display: none;
-    }
+   
 }
 
 /* High DPI displays */
