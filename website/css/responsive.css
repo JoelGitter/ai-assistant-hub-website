@@ -487,4 +487,20 @@ div[id*="card"] {
         visibility: visible !important;
         opacity: 1 !important;
     }
+}
+
+/* Override the problematic rule */
+@media (max-height: 600px) and (orientation: landscape) {
+    .floating-card {
+        display: none;
+    }
+}
+
+/* Immediately override it */
+@media (max-height: 600px) and (orientation: landscape) {
+    .floating-card {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
 } 
