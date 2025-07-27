@@ -460,11 +460,29 @@
     opacity: 1 !important;
 }
 
+/* Override the specific rule you mentioned */
 @media (max-height: 600px) and (orientation: landscape) {
     .floating-card,
     #card1,
     #card2,
     #card3 {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+
+/* Ultimate override - use attribute selectors for maximum specificity */
+div[class*="floating-card"],
+div[id*="card"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+    div[class*="floating-card"],
+    div[id*="card"] {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
