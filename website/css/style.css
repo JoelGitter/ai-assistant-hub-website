@@ -309,6 +309,7 @@ p {
     justify-content: center;
     align-items: center;
     min-height: 400px;
+    width: 100%;
 }
 
 .extension-preview {
@@ -319,56 +320,45 @@ p {
     animation: float 6s ease-in-out infinite;
 }
 
+/* Floating Cards - Completely rewritten */
 .floating-card {
-    position: absolute !important;
-    background: rgba(255, 255, 255, 0.95) !important;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-radius: var(--radius-lg);
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    font-size: var(--font-size-sm);
+    gap: 8px;
+    font-size: 14px;
     font-weight: 600;
-    color: var(--text-primary) !important;
-    box-shadow: var(--shadow-lg);
+    color: #1f2937;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     animation: float 6s ease-in-out infinite;
-    z-index: 999 !important;
+    z-index: 100;
+    white-space: nowrap;
+    pointer-events: none;
 }
 
 .floating-card i {
-    color: var(--primary-color);
-    font-size: 1.1em;
+    color: #6366f1;
+    font-size: 16px;
 }
 
-/* Force floating cards to always be visible - highest specificity */
-.hero-image .floating-card,
-.hero-image .floating-card.card-1,
-.hero-image .floating-card.card-2,
-.hero-image .floating-card.card-3 {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: absolute !important;
-    z-index: 999 !important;
-}
-
-.card-1 {
-    top: 20px;
-    left: 20px;
+#card1 {
+    top: 30px;
+    left: 30px;
     animation-delay: 0s;
 }
 
-.card-2 {
-    bottom: 20px;
-    right: 20px;
+#card2 {
+    bottom: 30px;
+    right: 30px;
     animation-delay: 2s;
 }
 
-.card-3 {
+#card3 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
