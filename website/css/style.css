@@ -365,6 +365,16 @@ p {
     animation-delay: 4s;
 }
 
+/* Override any display: none rules for floating cards */
+.floating-card,
+#card1,
+#card2,
+#card3 {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
