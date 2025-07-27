@@ -304,13 +304,15 @@ p {
 }
 
 .hero-image {
-    position: relative;
-    display: flex;
+    position: relative !important;
+    display: flex !important;
     justify-content: center;
     align-items: center;
-    min-height: 400px;
+    min-height: 400px !important;
+    height: 400px !important;
     /* Debug: Add border to see container */
-    border: 2px solid blue;
+    border: 3px solid blue !important;
+    background: rgba(0, 0, 255, 0.1) !important;
 }
 
 .extension-preview {
@@ -322,29 +324,41 @@ p {
 }
 
 .floating-card {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.95);
+    position: absolute !important;
+    background: rgba(255, 0, 0, 0.9) !important;
     backdrop-filter: blur(10px);
     padding: var(--spacing-md) var(--spacing-lg);
     border-radius: var(--radius-lg);
-    display: flex;
+    display: flex !important;
     align-items: center;
     gap: var(--spacing-sm);
     font-size: var(--font-size-sm);
     font-weight: 600;
-    color: var(--text-primary);
+    color: white !important;
     box-shadow: var(--shadow-lg);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 3px solid yellow !important;
     animation: float 6s ease-in-out infinite;
-    z-index: 10;
+    z-index: 9999 !important;
     /* Debug: Make cards more visible */
-    border: 2px solid red;
-    background: rgba(255, 0, 0, 0.8);
+    min-width: 120px;
+    min-height: 40px;
 }
 
 .floating-card i {
-    color: var(--primary-color);
+    color: white !important;
     font-size: 1.1em;
+}
+
+/* Force floating cards to be visible - highest priority */
+.hero-image .floating-card {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: absolute !important;
+    background: rgba(255, 0, 0, 0.9) !important;
+    border: 3px solid yellow !important;
+    color: white !important;
+    z-index: 9999 !important;
 }
 
 .card-1 {
