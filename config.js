@@ -6,8 +6,7 @@ const config = {
     stripe: {
         publishableKey: 'pk_live_51Rolv8I5JHWOZqzkQzDNnxsFw1q350Kqu0OdLBM9G1XKuhSXclErAds7w2qZ9g4HvUjqTnu2vVXI8vdNhLUBX9Dn00Y8s2BKkU',
         priceIds: {
-            proMonthly: 'price_1RpK6CI5JHWOZqzkceD9ddtl',
-            proYearly: 'price_1RpK6CI5JHWOZqzkxzlS6B85'
+            proMonthly: 'price_1RpK6CI5JHWOZqzkceD9ddtl'
         }
     },
     

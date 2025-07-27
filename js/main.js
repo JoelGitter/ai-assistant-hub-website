@@ -433,62 +433,7 @@ function initStripeCheckout() {
         });
     }
     
-    // Pro Annual Plan
-    const proAnnualBtn = document.getElementById('pro-annual-btn');
-    if (proAnnualBtn) {
-        proAnnualBtn.addEventListener('click', async () => {
-            try {
-                // Show loading state
-                proAnnualBtn.textContent = 'Loading...';
-                proAnnualBtn.disabled = true;
-                
-                // Create checkout session
-                const response = await fetch(config.api.baseUrl + config.api.billingEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        priceId: config.stripe.priceIds.proYearly,
-                        successUrl: window.location.origin + '/success.html',
-                        cancelUrl: window.location.origin + '/#pricing'
-                    })
-                });
-                
-                const session = await response.json();
-                
-                if (session.error) {
-                    throw new Error(session.error);
-                }
-                
-                // Redirect to Stripe Checkout
-                const result = await stripe.redirectToCheckout({
-                    sessionId: session.sessionId
-                });
-                
-                if (result.error) {
-                    throw new Error(result.error.message);
-                }
-                
-                // Track the event
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'begin_checkout', {
-                        event_category: 'ecommerce',
-                        event_label: 'pro_yearly',
-                        value: 99.90
-                    });
-                }
-                
-            } catch (error) {
-                console.error('Checkout error:', error);
-                showNotification('Unable to start checkout. Please try again.', 'error');
-                
-                // Reset button
-                proAnnualBtn.textContent = 'Choose Annual';
-                proAnnualBtn.disabled = false;
-            }
-        });
-    }
+
 }
 
 // Initialize analytics and performance monitoring
