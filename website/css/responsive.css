@@ -274,7 +274,7 @@
         padding: 6px 10px;
         opacity: 0.8;
         z-index: 100;
-        display: flex;
+        display: flex !important;
     }
     
     .card-1 {
@@ -447,5 +447,26 @@
     .feature-card:hover,
     .pricing-card:hover {
         transform: none;
+    }
+}
+
+/* Force floating cards to always be visible - highest priority override */
+.floating-card,
+#card1,
+#card2,
+#card3 {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+    .floating-card,
+    #card1,
+    #card2,
+    #card3 {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 } 
