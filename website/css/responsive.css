@@ -95,6 +95,7 @@
         padding: var(--spacing-sm) var(--spacing-md);
         opacity: 0.9;
         z-index: 10;
+        display: flex;
     }
     
     .card-1 {
@@ -273,6 +274,7 @@
         padding: var(--spacing-xs) var(--spacing-sm);
         opacity: 0.8;
         z-index: 10;
+        display: flex;
     }
     
     .card-1 {
