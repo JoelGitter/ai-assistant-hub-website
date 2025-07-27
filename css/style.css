@@ -475,12 +475,27 @@ p {
     color: var(--text-primary);
 }
 
-.step-image {
-    width: 100%;
-    max-width: 300px;
-    border-radius: var(--radius-lg);
-    margin-top: var(--spacing-lg);
+.step-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border-radius: 50%;
+    margin: var(--spacing-lg) auto 0;
     box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+}
+
+.step-icon:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.step-icon i {
+    font-size: 2rem;
+    color: white;
 }
 
 /* Pricing Section */
