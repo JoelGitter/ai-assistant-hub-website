@@ -29,31 +29,11 @@ router.post('/summarize', [
 
     const { content, maxLength = 200 } = req.body;
 
-    // Create summary using OpenAI
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: `You are a helpful AI assistant that creates concise, informative summaries. 
-          Focus on the key points and main ideas. Keep the summary under ${maxLength} characters.`
-        },
-        {
-          role: "user",
-          content: `Please summarize the following content:\n\n${content}`
-        }
-      ],
-      max_tokens: 500,
-      temperature: 0.3
-    });
-
-    const summary = completion.choices[0].message.content;
-
-    // Temporarily disabled usage tracking
-    // await incrementUsage(req, res, () => {});
+    // Simple mock response for testing (no OpenAI required)
+    const mockSummary = `This is a test summary of the content. The original text was: "${content.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
 
     res.json({
-      summary,
+      summary: mockSummary,
       success: true
     });
 
