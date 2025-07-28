@@ -393,8 +393,8 @@ function initStripeCheckout() {
                     },
                     body: JSON.stringify({
                         priceId: config.stripe.priceIds.proMonthly,
-                        successUrl: window.location.origin + '/success.html',
-                        cancelUrl: window.location.origin + '/#pricing'
+                        successUrl: 'https://myassistanthub.com/success.html',
+                        cancelUrl: 'https://myassistanthub.com/#pricing'
                     })
                 });
                 
