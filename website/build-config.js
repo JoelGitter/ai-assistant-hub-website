@@ -41,7 +41,7 @@ const configs = {
             measurementId: 'G-BNQRGZZEHK'
         },
         api: {
-            baseUrl: 'https://myassistanthub.com',
+            baseUrl: 'https://ai-assistant-hub-app.azurewebsites.net',
             billingEndpoint: '/api/billing/create-checkout-session'
         },
         website: {
