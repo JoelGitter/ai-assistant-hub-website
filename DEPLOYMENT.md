@@ -42,7 +42,7 @@ az webapp config appsettings set \
   --name ai-assistant-hub-app \
   --resource-group ai-assistant-hub-rg \
   --settings \
-  MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/ai-assistant-hub?retryWrites=true&w=majority" \
+  MONGODB_URI="mongodb+srv://your-username:your-password@your-cluster.mongodb.net/your-database?retryWrites=true&w=majority" \
   JWT_SECRET="your-super-secret-jwt-key-here" \
   OPENAI_API_KEY="your-openai-api-key-here" \
   SESSION_SECRET="your-session-secret-here" \
