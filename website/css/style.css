@@ -332,7 +332,7 @@ p {
     gap: 8px;
     font-size: 14px;
     font-weight: 600;
-    color: #1f2937;
+    color: #1f2937 !important;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     animation: float 6s ease-in-out infinite;
@@ -342,7 +342,7 @@ p {
 }
 
 .floating-card i {
-    color: #6366f1;
+    color: #6366f1 !important;
     font-size: 16px;
 }
 

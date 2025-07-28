@@ -389,6 +389,17 @@
         background: #4b5563;
         border-color: var(--primary-color);
     }
+    
+    /* Fix floating cards in dark mode */
+    .floating-card {
+        background: rgba(255, 255, 255, 0.95) !important;
+        color: #1f2937 !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    .floating-card i {
+        color: #6366f1 !important;
+    }
 }
 
 /* Focus styles for accessibility */
