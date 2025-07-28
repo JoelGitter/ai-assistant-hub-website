@@ -18,6 +18,8 @@
     --bg-secondary: #f9fafb;
     --bg-dark: #111827;
     --border-color: #e5e7eb;
+    --floating-card-text: #1f2937;
+    --floating-card-icon: #6366f1;
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -329,7 +331,7 @@ p {
     gap: var(--spacing-sm);
     font-size: var(--font-size-sm);
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--floating-card-text);
     box-shadow: var(--shadow-lg);
     border: 1px solid rgba(255, 255, 255, 0.2);
     animation: float 6s ease-in-out infinite;
@@ -337,7 +339,7 @@ p {
 }
 
 .floating-card i {
-    color: var(--primary-color);
+    color: var(--floating-card-icon);
     font-size: 1.1em;
 }
 
