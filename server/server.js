@@ -13,13 +13,11 @@ const {
   requestLogger,
   rateLimit 
 } = require('./middleware/auth');
-const dataProtection = require('./middleware/dataProtection');
 
 // Import routes
 const authRoutes = require('./routes/auth');
 const billingRoutes = require('./routes/billing');
 const aiRoutes = require('./routes/ai');
-const gdprRoutes = require('./routes/gdpr');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -60,11 +58,6 @@ app.use(corsMiddleware);
 // Compression middleware
 app.use(compression());
 
-// Data protection middleware
-app.use(dataProtection.privacyHeaders);
-app.use(dataProtection.sanitizeResponse);
-app.use(dataProtection.auditDataAccess);
-
 // Request logging
 app.use(morgan('combined'));
 
@@ -89,7 +82,6 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/ai', aiRoutes);
-app.use('/api/gdpr', gdprRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

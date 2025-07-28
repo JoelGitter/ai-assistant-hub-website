@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const encryption = require('../utils/encryption');
 
 // Middleware to verify JWT token
 const auth = async (req, res, next) => {
@@ -175,12 +174,7 @@ const requestLogger = (req, res, next) => {
   
   res.on('finish', () => {
     const duration = Date.now() - start;
-    const sanitizedBody = encryption.sanitizeForLog(req.body);
-    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms`, {
-      body: sanitizedBody,
-      userAgent: req.get('User-Agent'),
-      ip: req.ip
-    });
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms`);
   });
 
   next();

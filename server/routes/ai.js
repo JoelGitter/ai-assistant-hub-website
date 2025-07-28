@@ -12,8 +12,8 @@ const openai = new OpenAI({
 
 // Summarize page content
 router.post('/summarize', [
-  // auth, // Temporarily disabled for testing
-  // checkSubscriptionAccess, // Temporarily disabled for testing
+  auth,
+  checkSubscriptionAccess,
   body('content').isString().notEmpty(),
   body('maxLength').optional().isInt({ min: 50, max: 1000 })
 ], async (req, res) => {
@@ -49,12 +49,12 @@ router.post('/summarize', [
 
     const summary = completion.choices[0].message.content;
 
-    // Temporarily disabled usage tracking
-    // await incrementUsage(req, res, () => {});
+    // Increment usage after successful request
+    await incrementUsage(req, res, () => {});
 
     res.json({
       summary,
-      success: true
+      usage: res.locals.usageStats
     });
 
   } catch (error) {

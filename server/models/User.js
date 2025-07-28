@@ -1,63 +1,5 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
-
-// Encryption utility
-class EncryptionService {
-  constructor() {
-    this.algorithm = 'aes-256-gcm';
-    this.secretKey = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET || 'fallback-encryption-key-32-chars';
-    this.ivLength = 16;
-    this.tagLength = 16;
-  }
-
-  encrypt(text) {
-    if (!text) return text;
-    
-    try {
-      const iv = crypto.randomBytes(this.ivLength);
-      const cipher = crypto.createCipher(this.algorithm, this.secretKey);
-      cipher.setAAD(Buffer.from('user-data', 'utf8'));
-      
-      let encrypted = cipher.update(text, 'utf8', 'hex');
-      encrypted += cipher.final('hex');
-      
-      const tag = cipher.getAuthTag();
-      
-      return iv.toString('hex') + ':' + tag.toString('hex') + ':' + encrypted;
-    } catch (error) {
-      console.error('Encryption error:', error);
-      return text; // Fallback to plain text if encryption fails
-    }
-  }
-
-  decrypt(encryptedText) {
-    if (!encryptedText) return encryptedText;
-    
-    try {
-      const parts = encryptedText.split(':');
-      if (parts.length !== 3) return encryptedText; // Not encrypted, return as-is
-      
-      const iv = Buffer.from(parts[0], 'hex');
-      const tag = Buffer.from(parts[1], 'hex');
-      const encrypted = parts[2];
-      
-      const decipher = crypto.createDecipher(this.algorithm, this.secretKey);
-      decipher.setAAD(Buffer.from('user-data', 'utf8'));
-      decipher.setAuthTag(tag);
-      
-      let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-      decrypted += decipher.final('utf8');
-      
-      return decrypted;
-    } catch (error) {
-      console.error('Decryption error:', error);
-      return encryptedText; // Return encrypted text if decryption fails
-    }
-  }
-}
-
-const encryptionService = new EncryptionService();
 
 const subscriptionSchema = new mongoose.Schema({
   plan: {
@@ -72,23 +14,11 @@ const subscriptionSchema = new mongoose.Schema({
   },
   stripeCustomerId: {
     type: String,
-    sparse: true,
-    set: function(val) {
-      return val ? encryptionService.encrypt(val) : val;
-    },
-    get: function(val) {
-      return val ? encryptionService.decrypt(val) : val;
-    }
+    sparse: true
   },
   stripeSubscriptionId: {
     type: String,
-    sparse: true,
-    set: function(val) {
-      return val ? encryptionService.encrypt(val) : val;
-    },
-    get: function(val) {
-      return val ? encryptionService.decrypt(val) : val;
-    }
+    sparse: true
   },
   currentPeriodStart: {
     type: Date
@@ -122,13 +52,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
-    trim: true,
-    set: function(val) {
-      return val ? encryptionService.encrypt(val) : val;
-    },
-    get: function(val) {
-      return val ? encryptionService.decrypt(val) : val;
-    }
+    trim: true
   },
   password: {
     type: String,
@@ -138,38 +62,20 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    trim: true,
-    set: function(val) {
-      return val ? encryptionService.encrypt(val) : val;
-    },
-    get: function(val) {
-      return val ? encryptionService.decrypt(val) : val;
-    }
+    trim: true
   },
   isEmailVerified: {
     type: Boolean,
     default: false
   },
   emailVerificationToken: {
-    type: String,
-    set: function(val) {
-      return val ? encryptionService.encrypt(val) : val;
-    },
-    get: function(val) {
-      return val ? encryptionService.decrypt(val) : val;
-    }
+    type: String
   },
   emailVerificationExpires: {
     type: Date
   },
   passwordResetToken: {
-    type: String,
-    set: function(val) {
-      return val ? encryptionService.encrypt(val) : val;
-    },
-    get: function(val) {
-      return val ? encryptionService.decrypt(val) : val;
-    }
+    type: String
   },
   passwordResetExpires: {
     type: Date
@@ -207,15 +113,7 @@ const userSchema = new mongoose.Schema({
   },
   apiKeys: [{
     name: String,
-    key: {
-      type: String,
-      set: function(val) {
-        return val ? encryptionService.encrypt(val) : val;
-      },
-      get: function(val) {
-        return val ? encryptionService.decrypt(val) : val;
-      }
-    },
+    key: String,
     createdAt: {
       type: Date,
       default: Date.now
