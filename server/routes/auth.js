@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
-  body('name').isLength({ min: 2 }).trim()
+  body('username').isLength({ min: 2 }).trim()
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -22,7 +22,7 @@ router.post('/register', [
       });
     }
 
-    const { email, password, name } = req.body;
+    const { email, password, username } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -34,7 +34,7 @@ router.post('/register', [
     const user = new User({
       email,
       password,
-      name
+      name: username // Map username to name field
     });
 
     await user.save();
