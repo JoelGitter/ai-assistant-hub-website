@@ -112,6 +112,44 @@ router.post('/fill-form', [
   }
 });
 
+// Fill individual form field (for Chrome extension)
+router.post('/fill', [
+  // auth, // Temporarily disabled for testing
+  // checkSubscriptionAccess, // Temporarily disabled for testing
+  body('context').isString(),
+  body('instruction').optional().isString(),
+  body('url').optional().isString(),
+  body('fieldType').optional().isString()
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: errors.array() 
+      });
+    }
+
+    const { context, instruction = '', url, fieldType } = req.body;
+
+    // Simple mock response for testing (no OpenAI required)
+    const mockResult = `Sample text for ${fieldType || 'text'} field. Context: "${context.substring(0, 30)}..." - This is a mock response for testing the Chrome extension.`;
+
+    res.json({
+      result: mockResult,
+      success: true
+    });
+
+  } catch (error) {
+    console.error('Error filling field:', error);
+    res.status(500).json({ 
+      error: 'Failed to fill field',
+      details: error.message 
+    });
+  }
+});
+
 // Generate content based on prompt
 router.post('/generate', [
   auth,
