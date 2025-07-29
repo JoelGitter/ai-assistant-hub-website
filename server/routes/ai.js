@@ -14,6 +14,7 @@ const openai = new OpenAI({
 router.post('/summarize', [
   auth, // Re-enabled authentication
   checkSubscriptionAccess, // Re-enabled subscription check
+  getUsageStats, // Add usage stats to response
   body('content').optional().isString(),
   body('text').optional().isString(),
   body('maxLength').optional().isInt({ min: 50, max: 1000 })
@@ -38,9 +39,13 @@ router.post('/summarize', [
     // Simple mock response for testing (no OpenAI required)
     const mockSummary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
 
+    // Increment usage after successful request
+    await incrementUsage(req, res, () => {});
+
     res.json({
       summary: mockSummary,
-      success: true
+      success: true,
+      usage: res.locals.usageStats
     });
 
   } catch (error) {
@@ -116,6 +121,7 @@ router.post('/fill-form', [
 router.post('/fill', [
   auth, // Re-enabled authentication
   checkSubscriptionAccess, // Re-enabled subscription check
+  getUsageStats, // Add usage stats to response
   body('context').isString(),
   body('instruction').optional().isString(),
   body('url').optional().isString(),
@@ -136,9 +142,13 @@ router.post('/fill', [
     // Simple mock response for testing (no OpenAI required)
     const mockResult = `Sample text for ${fieldType || 'text'} field. Context: "${context.substring(0, 30)}..." - This is a mock response for testing the Chrome extension.`;
 
+    // Increment usage after successful request
+    await incrementUsage(req, res, () => {});
+
     res.json({
       result: mockResult,
-      success: true
+      success: true,
+      usage: res.locals.usageStats
     });
 
   } catch (error) {
