@@ -391,19 +391,14 @@
     }
     
     /* Fix floating cards in dark mode */
-    :root {
-        --floating-card-text: #000000;
-        --floating-card-icon: #6366f1;
-    }
-    
     .floating-card {
         background: rgba(255, 255, 255, 0.95) !important;
-        color: var(--floating-card-text) !important;
+        color: #1f2937 !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
     
     .floating-card i {
-        color: var(--floating-card-icon) !important;
+        color: #6366f1 !important;
     }
 }
 
