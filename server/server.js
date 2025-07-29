@@ -6,6 +6,9 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 
+// Import routes
+const aiRoutes = require('./routes/ai');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -30,6 +33,9 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Routes
+app.use('/api/ai', aiRoutes);
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -38,29 +44,6 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
-});
-
-// Simple AI endpoint for testing
-app.post('/api/ai/summarize', (req, res) => {
-  try {
-    const { content } = req.body;
-    
-    if (!content) {
-      return res.status(400).json({ error: 'Content is required' });
-    }
-
-    // Mock response
-    const mockSummary = `This is a test summary of: "${content.substring(0, 50)}..." - Mock response for testing.`;
-
-    res.json({
-      summary: mockSummary,
-      success: true
-    });
-
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
 });
 
 // Root endpoint

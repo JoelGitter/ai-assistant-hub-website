@@ -14,7 +14,8 @@ const openai = new OpenAI({
 router.post('/summarize', [
   // auth, // Temporarily disabled for testing
   // checkSubscriptionAccess, // Temporarily disabled for testing
-  body('content').isString().notEmpty(),
+  body('content').optional().isString(),
+  body('text').optional().isString(),
   body('maxLength').optional().isInt({ min: 50, max: 1000 })
 ], async (req, res) => {
   try {
@@ -27,10 +28,15 @@ router.post('/summarize', [
       });
     }
 
-    const { content, maxLength = 200 } = req.body;
+    const { content, text, maxLength = 200 } = req.body;
+    const contentToSummarize = content || text;
+
+    if (!contentToSummarize) {
+      return res.status(400).json({ error: 'Content or text is required' });
+    }
 
     // Simple mock response for testing (no OpenAI required)
-    const mockSummary = `This is a test summary of the content. The original text was: "${content.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
+    const mockSummary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
 
     res.json({
       summary: mockSummary,
