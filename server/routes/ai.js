@@ -12,8 +12,8 @@ const openai = new OpenAI({
 
 // Summarize page content
 router.post('/summarize', [
-  // auth, // Temporarily disabled for testing
-  // checkSubscriptionAccess, // Temporarily disabled for testing
+  auth, // Re-enabled authentication
+  checkSubscriptionAccess, // Re-enabled subscription check
   body('content').optional().isString(),
   body('text').optional().isString(),
   body('maxLength').optional().isInt({ min: 50, max: 1000 })
@@ -114,8 +114,8 @@ router.post('/fill-form', [
 
 // Fill individual form field (for Chrome extension)
 router.post('/fill', [
-  // auth, // Temporarily disabled for testing
-  // checkSubscriptionAccess, // Temporarily disabled for testing
+  auth, // Re-enabled authentication
+  checkSubscriptionAccess, // Re-enabled subscription check
   body('context').isString(),
   body('instruction').optional().isString(),
   body('url').optional().isString(),
