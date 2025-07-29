@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initContactForm();
     initMobileMenu();
     initLazyLoading();
+    initVideoModal();
 });
 
 // Navigation functionality
@@ -434,6 +435,67 @@ function initStripeCheckout() {
     }
     
 
+}
+
+// Video Modal functionality
+function initVideoModal() {
+    const demoBtn = document.getElementById('demo-btn');
+    const videoModal = document.getElementById('video-modal');
+    const videoModalClose = document.querySelector('.video-modal-close');
+    const demoVideo = document.getElementById('demo-video');
+    
+    // YouTube video ID - replace with your actual video ID
+    const youtubeVideoId = 'YOUR_YOUTUBE_VIDEO_ID'; // Replace this with your actual YouTube video ID
+    
+    if (demoBtn) {
+        demoBtn.addEventListener('click', function() {
+            // Set the video source
+            demoVideo.src = `https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1`;
+            
+            // Show the modal
+            videoModal.style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            
+            // Track the event
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'video_play', {
+                    event_category: 'engagement',
+                    event_label: 'demo_video'
+                });
+            }
+        });
+    }
+    
+    if (videoModalClose) {
+        videoModalClose.addEventListener('click', function() {
+            // Hide the modal
+            videoModal.style.display = 'none';
+            document.body.style.overflow = ''; // Restore scrolling
+            
+            // Stop the video
+            demoVideo.src = '';
+        });
+    }
+    
+    // Close modal when clicking outside
+    if (videoModal) {
+        videoModal.addEventListener('click', function(e) {
+            if (e.target === videoModal) {
+                videoModal.style.display = 'none';
+                document.body.style.overflow = '';
+                demoVideo.src = '';
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && videoModal.style.display === 'block') {
+            videoModal.style.display = 'none';
+            document.body.style.overflow = '';
+            demoVideo.src = '';
+        }
+    });
 }
 
 // Initialize analytics and performance monitoring
