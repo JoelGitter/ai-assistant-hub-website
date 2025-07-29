@@ -1,13 +1,13 @@
 {
-  "name": "ai-assistant-hub-website",
+  "name": "ai-assistant-hub",
   "version": "1.0.0",
-  "description": "AI Assistant Hub - Professional website for Chrome extension",
+  "description": "AI Assistant Hub - Chrome Extension and Backend",
   "scripts": {
-    "build": "node build-config.js production",
-    "build:dev": "node build-config.js development",
-    "deploy": "node build-config.js production && echo 'Static site ready for deployment'"
+    "start": "cd server && npm start",
+    "dev": "cd server && npm run dev",
+    "install-deps": "cd server && npm install"
   },
-  "keywords": ["ai", "chrome-extension", "website", "static"],
-  "author": "AI Assistant Hub",
-  "license": "MIT"
+  "engines": {
+    "node": ">=18.0.0"
+  }
 } 
