@@ -25,6 +25,7 @@ jobs:
 
       - name: npm install, build, and test
         run: |
+          cd server
           npm install
           npm run build --if-present
           npm run test --if-present
@@ -33,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: server
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,4 +53,3 @@ jobs:
           app-name: 'ai-assistant-hub-app'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B4DA2A028EC344608702A1933E9F2429 }}
