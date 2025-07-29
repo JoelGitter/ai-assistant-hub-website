@@ -327,8 +327,6 @@ p {
     font-size: var(--font-size-sm);
     font-weight: 600;
     color: var(--floating-card-text);
-    box-shadow: var(--shadow-lg);
-    border: 1px solid rgba(255, 255, 255, 0.2);
     animation: float 3s ease-in-out infinite;
 }
 
@@ -353,11 +351,6 @@ p {
     bottom: 20%;
     left: 10%;
     animation-delay: 2s;
-}
-
-.floating-card,
-.floating-card i {
-    color: var(--floating-card-text) !important;
 }
 
 @media (max-height: 600px) and (orientation: landscape) {
