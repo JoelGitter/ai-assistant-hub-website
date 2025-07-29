@@ -1,13 +1,29 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// Initialize Stripe (optional for testing)
+let stripe = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+}
 const User = require('../models/User');
 
 class StripeService {
   constructor() {
     this.stripe = stripe;
+    if (!this.stripe) {
+      console.log('⚠️  Stripe not initialized - billing features will be disabled');
+    }
+  }
+
+  // Check if Stripe is initialized
+  isInitialized() {
+    return !!this.stripe;
   }
 
   // Create a Stripe customer
   async createCustomer(user) {
+    if (!this.isInitialized()) {
+      throw new Error('Stripe not initialized');
+    }
+    
     try {
       const customer = await this.stripe.customers.create({
         email: user.email,
@@ -26,6 +42,10 @@ class StripeService {
 
   // Create a checkout session
   async createCheckoutSession(priceId, successUrl, cancelUrl, customerEmail = null) {
+    if (!this.isInitialized()) {
+      throw new Error('Stripe not initialized');
+    }
+    
     try {
       const sessionData = {
         payment_method_types: ['card'],
