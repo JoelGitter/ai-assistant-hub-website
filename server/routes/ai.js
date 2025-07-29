@@ -5,10 +5,13 @@ const { checkSubscriptionAccess, incrementUsage, getUsageStats } = require('../m
 const auth = require('../middleware/auth');
 const router = express.Router();
 
-// Initialize OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// Initialize OpenAI (optional for testing)
+let openai = null;
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  });
+}
 
 // Summarize page content
 router.post('/summarize', [

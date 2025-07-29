@@ -8,6 +8,8 @@ const morgan = require('morgan');
 
 // Import routes
 const aiRoutes = require('./routes/ai');
+const authRoutes = require('./routes/auth');
+const billingRoutes = require('./routes/billing');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +37,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
 app.use('/api/ai', aiRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/billing', billingRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
