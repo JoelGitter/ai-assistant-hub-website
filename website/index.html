@@ -93,9 +93,9 @@
                     <a href="https://chrome.google.com/webstore/detail/ai-assistant-hub" class="btn btn-primary" target="_blank">
                         <i class="fab fa-chrome"></i> Install for Chrome
                     </a>
-                    <a href="#demo" class="btn btn-secondary">
+                    <button id="demo-btn" class="btn btn-secondary">
                         <i class="fas fa-play"></i> Watch Demo
-                    </a>
+                    </button>
                 </div>
                 <div class="hero-stats">
                     <div class="stat">
@@ -487,6 +487,21 @@
             </div>
         </div>
     </footer>
+
+    <!-- Video Modal -->
+    <div id="video-modal" class="video-modal">
+        <div class="video-modal-content">
+            <span class="video-modal-close">&times;</span>
+            <div class="video-container">
+                <iframe id="demo-video" 
+                        src="" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript -->
     <script src="js/main.js"></script>
