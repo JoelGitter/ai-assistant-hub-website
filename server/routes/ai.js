@@ -39,8 +39,13 @@ router.post('/summarize', [
     // Simple mock response for testing (no OpenAI required)
     const mockSummary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
 
-    // Increment usage after successful request
-    await incrementUsage(req, res, () => {});
+    // Increment usage after successful request (before sending response)
+    try {
+      await incrementUsage(req, res, () => {});
+    } catch (error) {
+      console.error('Error incrementing usage:', error);
+      // Don't fail the request if usage tracking fails
+    }
 
     res.json({
       summary: mockSummary,
@@ -142,8 +147,13 @@ router.post('/fill', [
     // Simple mock response for testing (no OpenAI required)
     const mockResult = `Sample text for ${fieldType || 'text'} field. Context: "${context.substring(0, 30)}..." - This is a mock response for testing the Chrome extension.`;
 
-    // Increment usage after successful request
-    await incrementUsage(req, res, () => {});
+    // Increment usage after successful request (before sending response)
+    try {
+      await incrementUsage(req, res, () => {});
+    } catch (error) {
+      console.error('Error incrementing usage:', error);
+      // Don't fail the request if usage tracking fails
+    }
 
     res.json({
       result: mockResult,
