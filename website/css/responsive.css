@@ -392,7 +392,7 @@
     
     /* Fix floating cards in dark mode */
     :root {
-        --floating-card-text: #1f2937;
+        --floating-card-text: #000000;
         --floating-card-icon: #6366f1;
     }
     
