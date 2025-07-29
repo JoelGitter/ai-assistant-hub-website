@@ -2,7 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const OpenAI = require('openai');
 const { checkSubscriptionAccess, incrementUsage, getUsageStats } = require('../middleware/billing');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 const router = express.Router();
 
 // Initialize OpenAI (optional for testing)
