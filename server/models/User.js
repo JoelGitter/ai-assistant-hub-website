@@ -92,7 +92,15 @@ const userSchema = new mongoose.Schema({
   },
   subscription: {
     type: subscriptionSchema,
-    default: () => ({})
+    default: () => ({
+      plan: 'free',
+      status: 'inactive',
+      usage: {
+        requestsThisMonth: 0,
+        requestsLimit: 10,
+        lastResetDate: new Date()
+      }
+    })
   },
   preferences: {
     theme: {
@@ -159,6 +167,31 @@ userSchema.pre('save', async function(next) {
   }
 });
 
+// Pre-save middleware to ensure subscription structure
+userSchema.pre('save', function(next) {
+  // Ensure subscription object exists and has proper structure
+  if (!this.subscription) {
+    this.subscription = {};
+  }
+  
+  if (!this.subscription.usage) {
+    this.subscription.usage = {
+      requestsThisMonth: 0,
+      requestsLimit: 10,
+      lastResetDate: new Date()
+    };
+  }
+  
+  // Set defaults if not present
+  if (!this.subscription.plan) this.subscription.plan = 'free';
+  if (!this.subscription.status) this.subscription.status = 'inactive';
+  if (this.subscription.usage.requestsThisMonth === undefined) this.subscription.usage.requestsThisMonth = 0;
+  if (this.subscription.usage.requestsLimit === undefined) this.subscription.usage.requestsLimit = 10;
+  if (!this.subscription.usage.lastResetDate) this.subscription.usage.lastResetDate = new Date();
+  
+  next();
+});
+
 // Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
@@ -208,13 +241,22 @@ userSchema.methods.incrementUsage = function() {
   const now = new Date();
   const lastReset = new Date(this.subscription.usage.lastResetDate);
   
+  console.log('[Usage] Incrementing usage for user:', this.email);
+  console.log('[Usage] Current usage:', this.subscription.usage.requestsThisMonth);
+  console.log('[Usage] Current month:', now.getMonth(), now.getFullYear());
+  console.log('[Usage] Last reset month:', lastReset.getMonth(), lastReset.getFullYear());
+  
   // Reset usage if it's a new month
   if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
+    console.log('[Usage] New month detected, resetting usage to 1');
     this.subscription.usage.requestsThisMonth = 1;
     this.subscription.usage.lastResetDate = now;
   } else {
+    console.log('[Usage] Same month, incrementing usage');
     this.subscription.usage.requestsThisMonth += 1;
   }
+  
+  console.log('[Usage] New usage count:', this.subscription.usage.requestsThisMonth);
   
   return this.save();
 };

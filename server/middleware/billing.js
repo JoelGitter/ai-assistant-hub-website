@@ -36,17 +36,23 @@ const checkSubscriptionAccess = async (req, res, next) => {
 // Middleware to increment usage after successful request
 const incrementUsage = async (req, res, next) => {
   try {
+    console.log('[Billing] Incrementing usage for request');
     const user = await User.findById(req.user.id);
     if (!user) {
+      console.log('[Billing] User not found for usage increment');
       return res.status(404).json({ error: 'User not found' });
     }
 
+    console.log('[Billing] User found:', user.email);
+    console.log('[Billing] Current usage before increment:', user.subscription.usage.requestsThisMonth);
+    
     // Increment usage
     await user.incrementUsage();
     
+    console.log('[Billing] Usage increment completed');
     next();
   } catch (error) {
-    console.error('Error incrementing usage:', error);
+    console.error('[Billing] Error incrementing usage:', error);
     // Don't fail the request if usage tracking fails
     next();
   }
