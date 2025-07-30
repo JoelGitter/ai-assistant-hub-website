@@ -171,6 +171,8 @@ async function handleLogin() {
         loginBtn.disabled = true;
         loginBtn.textContent = 'Logging in...';
 
+        console.log('[Popup] Attempting login for:', email);
+
         const response = await fetch(`${SERVER_URL}/api/auth/login`, {
             method: 'POST',
             headers: {
@@ -180,9 +182,16 @@ async function handleLogin() {
         });
 
         const data = await response.json();
+        console.log('[Popup] Login response:', response.status, data);
 
         if (response.ok) {
+            console.log('[Popup] Login successful, storing token...');
             await chrome.storage.sync.set({ token: data.token });
+            
+            // Verify token was stored
+            const stored = await chrome.storage.sync.get(['token']);
+            console.log('[Popup] Token stored successfully:', !!stored.token);
+            
             showMessage('Login successful!', 'success');
             await loadUserStatus();
             // If not verified, show verify message
@@ -190,10 +199,11 @@ async function handleLogin() {
                 showMessage('Please verify your email to use the service. Check your inbox.', 'error');
             }
         } else {
+            console.log('[Popup] Login failed:', data.error);
             showMessage(data.error || 'Login failed', 'error');
       }
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('[Popup] Login error:', error);
         showMessage('Connection error. Please try again.', 'error');
     } finally {
         loginBtn.disabled = false;
