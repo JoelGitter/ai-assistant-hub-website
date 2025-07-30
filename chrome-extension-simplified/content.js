@@ -448,14 +448,16 @@ function showSpinnerModal(text) {
 }
 
 function showSuccessModal(text, value) {
-  // Split summary into points (by <br> and bold number)
+  // Split summary into points (by numbered bullet points)
   let points = [];
   if (value) {
-    // Remove empty lines, split by <br>, and group by bold numbers
-    const raw = value.split(/<br>/g).map(s => s.trim()).filter(Boolean);
+    // Split by numbered bullet points (1., 2., 3., etc.)
+    const lines = value.split(/\n/).map(s => s.trim()).filter(Boolean);
     let current = '';
-    for (let line of raw) {
-      if (/<b>\d+\.<\/b>/.test(line)) {
+    
+    for (let line of lines) {
+      // Check if line starts with a number followed by a dot (1., 2., 3., etc.)
+      if (/^\d+\./.test(line)) {
         if (current) points.push(current);
         current = line;
       } else {
@@ -894,14 +896,16 @@ checkAndShowSummarizeNotification();
 
 
   function showSuccessModal(text, value) {
-    // Split summary into points (by <br> and bold number)
+    // Split summary into points (by numbered bullet points)
     let points = [];
     if (value) {
-      // Remove empty lines, split by <br>, and group by bold numbers
-      const raw = value.split(/<br>/g).map(s => s.trim()).filter(Boolean);
+      // Split by numbered bullet points (1., 2., 3., etc.)
+      const lines = value.split(/\n/).map(s => s.trim()).filter(Boolean);
       let current = '';
-      for (let line of raw) {
-        if (/<b>\d+\.<\/b>/.test(line)) {
+      
+      for (let line of lines) {
+        // Check if line starts with a number followed by a dot (1., 2., 3., etc.)
+        if (/^\d+\./.test(line)) {
           if (current) points.push(current);
           current = line;
         } else {
