@@ -57,13 +57,19 @@ router.post('/summarize', [
           messages: [
             {
               role: "system",
-              content: `You are an AI assistant that creates concise, informative summaries. 
-              Summarize the given content in ${maxLength} words or less. 
-              Focus on the key points and main ideas.`
+              content: `You are an AI assistant that creates concise, structured summaries. 
+              Always return summaries as 3-6 numbered bullet points (1., 2., 3., etc.).
+              Each bullet point should be 1-2 sentences maximum.
+              Focus on the key points, main ideas, and important details.
+              Format the response exactly like this example:
+              1. First key point about the main topic.
+              2. Second important detail or finding.
+              3. Third significant aspect or conclusion.
+              4. Fourth relevant point or implication.`
             },
             {
               role: "user",
-              content: `Please summarize this content: ${contentToSummarize}`
+              content: `Please summarize this content in 3-6 numbered bullet points: ${contentToSummarize}`
             }
           ],
           max_tokens: 500,
@@ -85,8 +91,11 @@ router.post('/summarize', [
       }
     } else {
       console.log('[AI] OpenAI not initialized - using mock response');
-      // Mock response when OpenAI is not configured
-      summary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
+      // Mock response when OpenAI is not configured - structured bullet points
+      summary = `1. This is a test summary of the content for demonstration purposes.
+2. The original text was: "${contentToSummarize.substring(0, 50)}..." 
+3. This is a mock response for testing the Chrome extension functionality.
+4. In production, this would be replaced with real AI-generated bullet points.`;
     }
 
     // Increment usage after successful request (before sending response)
