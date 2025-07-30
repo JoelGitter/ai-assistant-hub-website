@@ -80,8 +80,8 @@ router.post('/summarize', [
           code: error.code,
           type: error.type
         });
-        // Fallback to mock response if OpenAI fails
-        summary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a fallback response due to OpenAI API issues.`;
+        // Return the actual error message instead of generic fallback
+        summary = `OpenAI API Error: ${error.message || error.name || 'Unknown error'}. Status: ${error.status || 'Unknown'}. Code: ${error.code || 'Unknown'}.`;
       }
     } else {
       console.log('[AI] OpenAI not initialized - using mock response');
