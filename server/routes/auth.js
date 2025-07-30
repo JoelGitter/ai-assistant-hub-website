@@ -325,6 +325,24 @@ router.get('/verify', auth, async (req, res) => {
   }
 });
 
+// Get current user (alias for /verify)
+router.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    res.json({
+      valid: true,
+      user: user.toSafeObject()
+    });
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
 // Health check
 router.get('/health', async (req, res) => {
   res.json({

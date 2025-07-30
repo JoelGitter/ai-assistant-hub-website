@@ -352,8 +352,50 @@ chrome.storage.onChanged.addListener((changes, area) => {
 async function getAuthToken() {
   return new Promise((resolve) => {
     chrome.storage.sync.get(['token'], (result) => {
+      console.log('[AI Assistant] Token check:', result.token ? 'Token exists' : 'No token found');
       if (result.token) {
-        resolve(result.token);
+        // Add token validation check
+        fetch(`${SERVER_URL}/api/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${result.token}`,
+            'Content-Type': 'application/json'
+          }
+        }).then(response => {
+          if (response.ok) {
+            console.log('[AI Assistant] Token is valid');
+            resolve(result.token);
+          } else {
+            console.log('[AI Assistant] Token is invalid, removing from storage');
+            chrome.storage.sync.remove(['token']);
+            // Prompt for authentication
+            let modal = showModal(`
+              <div style="text-align: center; padding: 20px;">
+                <h3 style="font-size:18px; font-weight:600; margin-bottom:10px;">Authentication Required</h3>
+                <p style="margin-bottom:15px;">Please <b>click the extension icon</b> in your browser toolbar to log in or create an account.</p>
+                <div style="margin-top:12px; font-size:13px; color:#555;">
+                  The login and registration hub will appear as a popup.<br>
+                  <span style='font-size:32px; margin-top:8px;'>🧩</span>
+                </div>
+              </div>
+            `);
+            resolve(null);
+          }
+        }).catch(error => {
+          console.error('[AI Assistant] Token validation error:', error);
+          chrome.storage.sync.remove(['token']);
+          // Prompt for authentication
+          let modal = showModal(`
+            <div style="text-align: center; padding: 20px;">
+              <h3 style="font-size:18px; font-weight:600; margin-bottom:10px;">Authentication Required</h3>
+              <p style="margin-bottom:15px;">Please <b>click the extension icon</b> in your browser toolbar to log in or create an account.</p>
+              <div style="margin-top:12px; font-size:13px; color:#555;">
+                The login and registration hub will appear as a popup.<br>
+                <span style='font-size:32px; margin-top:8px;'>🧩</span>
+              </div>
+            </div>
+          `);
+          resolve(null);
+        });
       } else {
         // Prompt for authentication
         let modal = showModal(`
