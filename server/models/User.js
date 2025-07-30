@@ -246,24 +246,39 @@ userSchema.methods.incrementUsage = async function() {
   console.log('[Usage] Current month:', now.getMonth(), now.getFullYear());
   console.log('[Usage] Last reset month:', lastReset.getMonth(), lastReset.getFullYear());
   
+  let newUsageCount;
+  let newResetDate;
+  
   // Reset usage if it's a new month
   if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
     console.log('[Usage] New month detected, resetting usage to 1');
-    this.subscription.usage.requestsThisMonth = 1;
-    this.subscription.usage.lastResetDate = now;
+    newUsageCount = 1;
+    newResetDate = now;
   } else {
     console.log('[Usage] Same month, incrementing usage');
-    this.subscription.usage.requestsThisMonth += 1;
+    newUsageCount = this.subscription.usage.requestsThisMonth + 1;
+    newResetDate = this.subscription.usage.lastResetDate;
   }
   
-  console.log('[Usage] New usage count:', this.subscription.usage.requestsThisMonth);
+  console.log('[Usage] New usage count:', newUsageCount);
   
   try {
-    const result = await this.save();
-    console.log('[Usage] Save successful, new usage:', result.subscription.usage.requestsThisMonth);
+    // Use findByIdAndUpdate to avoid validation issues
+    const result = await User.findByIdAndUpdate(
+      this._id,
+      {
+        $set: {
+          'subscription.usage.requestsThisMonth': newUsageCount,
+          'subscription.usage.lastResetDate': newResetDate
+        }
+      },
+      { new: true } // Return the updated document
+    );
+    
+    console.log('[Usage] Update successful, new usage:', result.subscription.usage.requestsThisMonth);
     return result;
   } catch (error) {
-    console.error('[Usage] Save failed:', error);
+    console.error('[Usage] Update failed:', error);
     throw error;
   }
 };
