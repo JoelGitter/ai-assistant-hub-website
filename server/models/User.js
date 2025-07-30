@@ -264,7 +264,7 @@ userSchema.methods.incrementUsage = async function() {
   
   try {
     // Use findByIdAndUpdate to avoid validation issues
-    const result = await User.findByIdAndUpdate(
+    const result = await this.constructor.findByIdAndUpdate(
       this._id,
       {
         $set: {
