@@ -27,7 +27,6 @@ router.post(
   [
     auth, // Re-enabled authentication
     checkSubscriptionAccess, // Re-enabled subscription check
-    getUsageStats, // Add usage stats to response
     body("content").optional().isString(),
     body("text").optional().isString(),
     body("maxLength").optional().isInt({ min: 50, max: 1000 }),
@@ -109,12 +108,6 @@ router.post(
 4. In production, this would be replaced with real AI-generated bullet points.`;
       }
 
-      res.json({
-        summary: summary,
-        success: true,
-        usage: res.locals.usageStats,
-      });
-
       // Increment usage after successful response is sent
       try {
         await incrementUsage(req, res, () => {});
@@ -125,6 +118,23 @@ router.post(
           details: error.message 
         });
       }
+
+      // Get updated usage stats AFTER incrementing
+      try {
+        await getUsageStats(req, res, () => {});
+      } catch (error) {
+        console.error("Error getting usage stats:", error);
+        return res.status(500).json({ 
+          error: "Failed to get usage statistics", 
+          details: error.message 
+        });
+      }
+
+      res.json({
+        summary: summary,
+        success: true,
+        usage: res.locals.usageStats,
+      });
     } catch (error) {
       console.error("Error summarizing content:", error);
       res.status(500).json({
@@ -192,6 +202,17 @@ router.post(
         });
       }
 
+      // Get updated usage stats AFTER incrementing
+      try {
+        await getUsageStats(req, res, () => {});
+      } catch (error) {
+        console.error("Error getting usage stats:", error);
+        return res.status(500).json({ 
+          error: "Failed to get usage statistics", 
+          details: error.message 
+        });
+      }
+
       res.json({
         suggestions,
         usage: res.locals.usageStats,
@@ -212,7 +233,6 @@ router.post(
   [
     auth, // Re-enabled authentication
     checkSubscriptionAccess, // Re-enabled subscription check
-    getUsageStats, // Add usage stats to response
     body("context").isString(),
     body("instruction").optional().isString(),
     body("url").optional().isString(),
@@ -301,6 +321,17 @@ router.post(
         console.error("Error incrementing usage:", error);
         return res.status(500).json({ 
           error: "Usage tracking failed", 
+          details: error.message 
+        });
+      }
+
+      // Get updated usage stats AFTER incrementing
+      try {
+        await getUsageStats(req, res, () => {});
+      } catch (error) {
+        console.error("Error getting usage stats:", error);
+        return res.status(500).json({ 
+          error: "Failed to get usage statistics", 
           details: error.message 
         });
       }
