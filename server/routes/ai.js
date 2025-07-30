@@ -39,8 +39,39 @@ router.post('/summarize', [
       return res.status(400).json({ error: 'Content or text is required' });
     }
 
-    // Simple mock response for testing (no OpenAI required)
-    const mockSummary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
+    let summary;
+    
+    // Use OpenAI if available, otherwise fallback to mock
+    if (openai) {
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content: `You are an AI assistant that creates concise, informative summaries. 
+              Summarize the given content in ${maxLength} words or less. 
+              Focus on the key points and main ideas.`
+            },
+            {
+              role: "user",
+              content: `Please summarize this content: ${contentToSummarize}`
+            }
+          ],
+          max_tokens: 500,
+          temperature: 0.3
+        });
+        
+        summary = completion.choices[0].message.content;
+      } catch (error) {
+        console.error('OpenAI API error:', error);
+        // Fallback to mock response if OpenAI fails
+        summary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a fallback response due to OpenAI API issues.`;
+      }
+    } else {
+      // Mock response when OpenAI is not configured
+      summary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
+    }
 
     // Increment usage after successful request (before sending response)
     try {
@@ -51,7 +82,7 @@ router.post('/summarize', [
     }
 
     res.json({
-      summary: mockSummary,
+      summary: summary,
       success: true,
       usage: res.locals.usageStats
     });
