@@ -233,22 +233,24 @@ router.post(
               {
                 role: "system",
                 content: `You are an AI assistant that helps fill out form fields intelligently.
-              Based on the context and user instruction, provide an appropriate value for the field.
-              Return only the value, no explanations or additional text.
-              Keep responses concise and relevant to the field type.`,
-              },
-              {
-                role: "user",
-                content: `Field type: ${fieldType || "text"}
-              Context: ${context}
-              User instruction: ${instruction}
-              
-              Please provide an appropriate value for this field.`,
-              },
-            ],
-            max_tokens: 100,
-            temperature: 0.3,
-          });
+                  Based on the context and user instruction, provide an appropriate value for the field.
+                  Generate detailed, realistic responses that match the field type and context.
+                  For text areas, provide longer, more comprehensive content.
+                  For input fields, provide appropriate but detailed responses.
+                  Return only the value, no explanations or additional text.`,
+                },
+                {
+                  role: "user",
+                  content: `Field type: ${fieldType || "text"}
+                  Context: ${context}
+                  User instruction: ${instruction}
+                  
+                  Please provide a detailed, appropriate value for this field.`,
+                },
+              ],
+              max_tokens: 300,
+              temperature: 0.7,
+            });
 
           console.log("[AI] OpenAI API call successful for field fill");
           result = completion.choices[0].message.content;
