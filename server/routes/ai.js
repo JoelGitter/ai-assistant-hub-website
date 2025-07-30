@@ -8,9 +8,13 @@ const router = express.Router();
 // Initialize OpenAI (optional for testing)
 let openai = null;
 if (process.env.OPENAI_API_KEY) {
+  console.log('[AI] OpenAI API key found, initializing...');
   openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
   });
+  console.log('[AI] OpenAI initialized successfully');
+} else {
+  console.log('[AI] No OpenAI API key found, using mock responses');
 }
 
 // Summarize page content
@@ -44,6 +48,10 @@ router.post('/summarize', [
     // Use OpenAI if available, otherwise fallback to mock
     if (openai) {
       try {
+        console.log('[AI] Attempting OpenAI API call...');
+        console.log('[AI] Content length:', contentToSummarize.length);
+        console.log('[AI] Max length:', maxLength);
+        
         const completion = await openai.chat.completions.create({
           model: "gpt-3.5-turbo",
           messages: [
@@ -62,13 +70,21 @@ router.post('/summarize', [
           temperature: 0.3
         });
         
+        console.log('[AI] OpenAI API call successful');
         summary = completion.choices[0].message.content;
       } catch (error) {
-        console.error('OpenAI API error:', error);
+        console.error('[AI] OpenAI API error details:', {
+          name: error.name,
+          message: error.message,
+          status: error.status,
+          code: error.code,
+          type: error.type
+        });
         // Fallback to mock response if OpenAI fails
         summary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a fallback response due to OpenAI API issues.`;
       }
     } else {
+      console.log('[AI] OpenAI not initialized - using mock response');
       // Mock response when OpenAI is not configured
       summary = `This is a test summary of the content. The original text was: "${contentToSummarize.substring(0, 50)}..." - This is a mock response for testing the Chrome extension.`;
     }
