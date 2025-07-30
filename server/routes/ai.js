@@ -203,8 +203,54 @@ router.post('/fill', [
 
     const { context, instruction = '', url, fieldType } = req.body;
 
-    // Simple mock response for testing (no OpenAI required)
-    const mockResult = `Sample text for ${fieldType || 'text'} field. Context: "${context.substring(0, 30)}..." - This is a mock response for testing the Chrome extension.`;
+    let result;
+    
+    // Use OpenAI if available, otherwise fallback to mock
+    if (openai) {
+      try {
+        console.log('[AI] Attempting OpenAI API call for field fill...');
+        
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "system",
+              content: `You are an AI assistant that helps fill out form fields intelligently.
+              Based on the context and user instruction, provide an appropriate value for the field.
+              Return only the value, no explanations or additional text.
+              Keep responses concise and relevant to the field type.`
+            },
+            {
+              role: "user",
+              content: `Field type: ${fieldType || 'text'}
+              Context: ${context}
+              User instruction: ${instruction}
+              
+              Please provide an appropriate value for this field.`
+            }
+          ],
+          max_tokens: 100,
+          temperature: 0.3
+        });
+        
+        console.log('[AI] OpenAI API call successful for field fill');
+        result = completion.choices[0].message.content;
+      } catch (error) {
+        console.error('[AI] OpenAI API error for field fill:', {
+          name: error.name,
+          message: error.message,
+          status: error.status,
+          code: error.code,
+          type: error.type
+        });
+        // Fallback to mock response if OpenAI fails
+        result = `Sample text for ${fieldType || 'text'} field. Context: "${context.substring(0, 30)}..." - This is a fallback response due to OpenAI API issues.`;
+      }
+    } else {
+      console.log('[AI] OpenAI not initialized - using mock response for field fill');
+      // Mock response when OpenAI is not configured
+      result = `Sample text for ${fieldType || 'text'} field. Context: "${context.substring(0, 30)}..." - This is a mock response for testing the Chrome extension.`;
+    }
 
     // Increment usage after successful request (before sending response)
     try {
@@ -215,7 +261,7 @@ router.post('/fill', [
     }
 
     res.json({
-      result: mockResult,
+      result: result,
       success: true,
       usage: res.locals.usageStats
     });
