@@ -109,19 +109,22 @@ router.post(
 4. In production, this would be replaced with real AI-generated bullet points.`;
       }
 
-      // Increment usage after successful request (before sending response)
-      try {
-        await incrementUsage(req, res, () => {});
-      } catch (error) {
-        console.error("Error incrementing usage:", error);
-        // Don't fail the request if usage tracking fails
-      }
-
       res.json({
         summary: summary,
         success: true,
         usage: res.locals.usageStats,
       });
+
+      // Increment usage after successful response is sent
+      try {
+        await incrementUsage(req, res, () => {});
+      } catch (error) {
+        console.error("Error incrementing usage:", error);
+        return res.status(500).json({ 
+          error: "Usage tracking failed", 
+          details: error.message 
+        });
+      }
     } catch (error) {
       console.error("Error summarizing content:", error);
       res.status(500).json({
@@ -179,7 +182,15 @@ router.post(
       const suggestions = JSON.parse(completion.choices[0].message.content);
 
       // Increment usage after successful request
-      await incrementUsage(req, res, () => {});
+      try {
+        await incrementUsage(req, res, () => {});
+      } catch (error) {
+        console.error("Error incrementing usage:", error);
+        return res.status(500).json({ 
+          error: "Usage tracking failed", 
+          details: error.message 
+        });
+      }
 
       res.json({
         suggestions,
@@ -288,7 +299,10 @@ router.post(
         await incrementUsage(req, res, () => {});
       } catch (error) {
         console.error("Error incrementing usage:", error);
-        // Don't fail the request if usage tracking fails
+        return res.status(500).json({ 
+          error: "Usage tracking failed", 
+          details: error.message 
+        });
       }
 
       res.json({
@@ -368,7 +382,15 @@ router.post(
       const generatedContent = completion.choices[0].message.content;
 
       // Increment usage after successful request
-      await incrementUsage(req, res, () => {});
+      try {
+        await incrementUsage(req, res, () => {});
+      } catch (error) {
+        console.error("Error incrementing usage:", error);
+        return res.status(500).json({ 
+          error: "Usage tracking failed", 
+          details: error.message 
+        });
+      }
 
       res.json({
         content: generatedContent,
@@ -452,7 +474,15 @@ router.post(
       const analysis = completion.choices[0].message.content;
 
       // Increment usage after successful request
-      await incrementUsage(req, res, () => {});
+      try {
+        await incrementUsage(req, res, () => {});
+      } catch (error) {
+        console.error("Error incrementing usage:", error);
+        return res.status(500).json({ 
+          error: "Usage tracking failed", 
+          details: error.message 
+        });
+      }
 
       res.json({
         analysis,

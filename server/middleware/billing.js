@@ -47,14 +47,19 @@ const incrementUsage = async (req, res, next) => {
     console.log('[Billing] Current usage before increment:', user.subscription.usage.requestsThisMonth);
     
     // Increment usage
-    await user.incrementUsage();
+    const updatedUser = await user.incrementUsage();
     
     console.log('[Billing] Usage increment completed');
+    console.log('[Billing] New usage count:', updatedUser.subscription.usage.requestsThisMonth);
     next();
   } catch (error) {
     console.error('[Billing] Error incrementing usage:', error);
-    // Don't fail the request if usage tracking fails
-    next();
+    // Fail the request if usage tracking fails
+    return res.status(500).json({ 
+      error: 'Usage tracking failed', 
+      details: error.message,
+      stack: error.stack 
+    });
   }
 };
 

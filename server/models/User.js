@@ -237,12 +237,12 @@ userSchema.methods.canMakeRequest = function() {
 };
 
 // Method to increment usage
-userSchema.methods.incrementUsage = function() {
+userSchema.methods.incrementUsage = async function() {
   const now = new Date();
   const lastReset = new Date(this.subscription.usage.lastResetDate);
   
   console.log('[Usage] Incrementing usage for user:', this.email);
-  console.log('[Usage] Current usage:', this.subscription.usage.requestsThisMonth);
+  console.log('[Usage] Current usage before:', this.subscription.usage.requestsThisMonth);
   console.log('[Usage] Current month:', now.getMonth(), now.getFullYear());
   console.log('[Usage] Last reset month:', lastReset.getMonth(), lastReset.getFullYear());
   
@@ -258,7 +258,14 @@ userSchema.methods.incrementUsage = function() {
   
   console.log('[Usage] New usage count:', this.subscription.usage.requestsThisMonth);
   
-  return this.save();
+  try {
+    const result = await this.save();
+    console.log('[Usage] Save successful, new usage:', result.subscription.usage.requestsThisMonth);
+    return result;
+  } catch (error) {
+    console.error('[Usage] Save failed:', error);
+    throw error;
+  }
 };
 
 // Method to update subscription
