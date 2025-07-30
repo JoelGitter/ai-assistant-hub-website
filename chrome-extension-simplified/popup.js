@@ -88,12 +88,18 @@ function showUserInfo(user) {
     
     userEmail.textContent = user.email;
     
-    const remaining = user.plan === 'pro' ? 'unlimited' : Math.max(0, 10 - user.usage.totalRequests);
-    usageInfo.textContent = `${user.usage.totalRequests}/10 requests used (${remaining} remaining)`;
+    // Use the correct usage fields from the backend
+    const currentUsage = user.usage ? user.usage.currentUsage : 0;
+    const limit = user.usage ? user.usage.limit : 10;
+    const remaining = user.usage ? user.usage.remaining : 10;
+    const plan = user.usage ? user.usage.plan : 'free';
+    
+    const remainingText = plan === 'pro' ? 'unlimited' : remaining;
+    usageInfo.textContent = `${currentUsage}/${limit} requests used (${remainingText} remaining)`;
     
     // Show upgrade link if free plan and usage limit reached
     const upgradeLink = document.getElementById('upgrade-link');
-    if (user.plan === 'free' && user.usage.totalRequests >= 10) {
+    if (plan === 'free' && currentUsage >= limit) {
         upgradeLink.style.display = 'block';
     } else {
         upgradeLink.style.display = 'none';

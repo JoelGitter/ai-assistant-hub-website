@@ -333,9 +333,23 @@ router.get('/me', auth, async (req, res) => {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
+    // Get usage stats
+    const usageStats = {
+      currentUsage: user.subscription.usage.requestsThisMonth,
+      limit: user.subscription.usage.requestsLimit,
+      remaining: user.subscription.usage.requestsLimit - user.subscription.usage.requestsThisMonth,
+      plan: user.subscription.plan,
+      status: user.subscription.status,
+      hasReachedLimit: user.hasReachedLimit,
+      canMakeRequest: user.canMakeRequest()
+    };
+
     res.json({
       valid: true,
-      user: user.toSafeObject()
+      user: {
+        ...user.toSafeObject(),
+        usage: usageStats
+      }
     });
   } catch (error) {
     console.error('Error getting current user:', error);
