@@ -15,6 +15,8 @@ function isEligibleField(el) {
     const badTypes = ['hidden','button','submit','reset','image','file','checkbox','radio'];
     return !badTypes.includes(el.type);
   }
+  // Check for contenteditable elements (like Gmail's rich text editor)
+  if (el.getAttribute('contenteditable') === 'true') return true;
   return false;
 }
 
@@ -581,7 +583,34 @@ function showSuccessModal(text, value) {
 }
 
 function showErrorModal(msg) {
-  return showModal(`<div class="ai-assistant-error" style="margin-top:38px;">${msg}</div>`);
+  // Check if this is a limit reached error
+  if (msg.includes('limit reached') || msg.includes('Subscription limit reached')) {
+    const modal = showModal(`
+      <div style='text-align:center; padding:20px;'>
+        <div style='font-size:24px; margin-bottom:10px;'>🚀</div>
+        <div style='font-size:18px; font-weight:600; margin-bottom:8px; color:#4b3fa7;'>Upgrade to Pro</div>
+        <div style='font-size:14px; color:#666; margin-bottom:20px;'>${msg}</div>
+        <div style='display:flex; gap:12px; justify-content:center;'>
+          <button id='upgrade-now-btn' style='background:linear-gradient(135deg,#7f53ac 0%,#647dee 100%); color:#fff; border:none; border-radius:8px; padding:12px 24px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(127,83,172,0.3); transition:all 0.2s;'>Upgrade Now</button>
+          <button id='upgrade-cancel-btn' style='background:#f3f4f6; color:#666; border:none; border-radius:8px; padding:12px 24px; font-size:15px; cursor:pointer;'>Cancel</button>
+        </div>
+      </div>
+    `);
+    
+    // Add event listeners for the upgrade buttons
+    document.getElementById('upgrade-now-btn').onclick = () => {
+      window.open('https://myassistanthub.com/#pricing', '_blank');
+      modal.remove();
+    };
+    
+    document.getElementById('upgrade-cancel-btn').onclick = () => {
+      modal.remove();
+    };
+    
+    return modal;
+  } else {
+    return showModal(`<div class="ai-assistant-error" style="margin-top:38px;">${msg}</div>`);
+  }
 }
 
 function showUpgradeModal(msg) {
@@ -591,8 +620,8 @@ function showUpgradeModal(msg) {
       <div style='font-size:18px; font-weight:600; margin-bottom:8px; color:#4b3fa7;'>Upgrade to Pro</div>
       <div style='font-size:14px; color:#666; margin-bottom:20px;'>${msg}</div>
       <div style='display:flex; gap:12px; justify-content:center;'>
-        <button id='upgrade-now-btn' style='background:linear-gradient(135deg,#7f53ac 0%,#647dee 100%); color:#fff; border:none; border-radius:8px; padding:10px 20px; font-size:14px; font-weight:600; cursor:pointer;'>Upgrade Now</button>
-        <button id='upgrade-cancel-btn' style='background:#f3f4f6; color:#666; border:none; border-radius:8px; padding:10px 20px; font-size:14px; cursor:pointer;'>Cancel</button>
+        <button id='upgrade-now-btn' style='background:linear-gradient(135deg,#7f53ac 0%,#647dee 100%); color:#fff; border:none; border-radius:8px; padding:12px 24px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(127,83,172,0.3); transition:all 0.2s;'>Upgrade Now</button>
+        <button id='upgrade-cancel-btn' style='background:#f3f4f6; color:#666; border:none; border-radius:8px; padding:12px 24px; font-size:15px; cursor:pointer;'>Cancel</button>
       </div>
     </div>
   `);
@@ -646,7 +675,7 @@ async function summarizePageAction() {
     if (response.ok && data.success) {
       showSuccessModal('Summary', data.summary);
     } else {
-      if (data.upgradeRequired) {
+      if (data.error === 'Subscription limit reached' || data.upgradeRequired) {
         showUpgradeModal('Free tier limit reached. Please upgrade to continue using the service.');
       } else {
         showErrorModal(data.error || 'Failed to summarize.');
@@ -771,11 +800,19 @@ checkAndShowSummarizeNotification();
             result = result.replace(/^['"“"'']+|['"“"'']+$/g, '');
             showPreviewModal(result, instruction);
             // Fill the field with the result
-            field.value = result;
-            field.dispatchEvent(new Event('input', { bubbles: true }));
-            field.dispatchEvent(new Event('change', { bubbles: true }));
+            if (field.getAttribute('contenteditable') === 'true') {
+              // For contenteditable elements (like Gmail)
+              field.innerHTML = result;
+              field.dispatchEvent(new Event('input', { bubbles: true }));
+              field.dispatchEvent(new Event('change', { bubbles: true }));
+            } else {
+              // For regular input/textarea elements
+              field.value = result;
+              field.dispatchEvent(new Event('input', { bubbles: true }));
+              field.dispatchEvent(new Event('change', { bubbles: true }));
+            }
           } else {
-            if (data.upgradeRequired) {
+            if (data.error === 'Subscription limit reached' || data.upgradeRequired) {
               showUpgradeModal('Free tier limit reached. Please upgrade to continue using the service.');
             } else {
               showErrorModal(data.error || 'Failed to fill field.');
@@ -1010,7 +1047,34 @@ checkAndShowSummarizeNotification();
     render();
   }
   function showErrorModal(msg) {
-    return showModal(`<div class="ai-assistant-error" style="margin-top:38px;">${msg}</div>`);
+    // Check if this is a limit reached error
+    if (msg.includes('limit reached') || msg.includes('Subscription limit reached')) {
+      const modal = showModal(`
+        <div style='text-align:center; padding:20px;'>
+          <div style='font-size:24px; margin-bottom:10px;'>🚀</div>
+          <div style='font-size:18px; font-weight:600; margin-bottom:8px; color:#4b3fa7;'>Upgrade to Pro</div>
+          <div style='font-size:14px; color:#666; margin-bottom:20px;'>${msg}</div>
+          <div style='display:flex; gap:12px; justify-content:center;'>
+            <button id='upgrade-now-btn' style='background:linear-gradient(135deg,#7f53ac 0%,#647dee 100%); color:#fff; border:none; border-radius:8px; padding:12px 24px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(127,83,172,0.3); transition:all 0.2s;'>Upgrade Now</button>
+            <button id='upgrade-cancel-btn' style='background:#f3f4f6; color:#666; border:none; border-radius:8px; padding:12px 24px; font-size:15px; cursor:pointer;'>Cancel</button>
+          </div>
+        </div>
+      `);
+      
+      // Add event listeners for the upgrade buttons
+      document.getElementById('upgrade-now-btn').onclick = () => {
+        window.open('https://myassistanthub.com/#pricing', '_blank');
+        modal.remove();
+      };
+      
+      document.getElementById('upgrade-cancel-btn').onclick = () => {
+        modal.remove();
+      };
+      
+      return modal;
+    } else {
+      return showModal(`<div class="ai-assistant-error" style="margin-top:38px;">${msg}</div>`);
+    }
   }
 
   function showUpgradeModal(msg) {
@@ -1020,8 +1084,8 @@ checkAndShowSummarizeNotification();
         <div style='font-size:18px; font-weight:600; margin-bottom:8px; color:#4b3fa7;'>Upgrade to Pro</div>
         <div style='font-size:14px; color:#666; margin-bottom:20px;'>${msg}</div>
         <div style='display:flex; gap:12px; justify-content:center;'>
-          <button id='upgrade-now-btn' style='background:linear-gradient(135deg,#7f53ac 0%,#647dee 100%); color:#fff; border:none; border-radius:8px; padding:10px 20px; font-size:14px; font-weight:600; cursor:pointer;'>Upgrade Now</button>
-          <button id='upgrade-cancel-btn' style='background:#f3f4f6; color:#666; border:none; border-radius:8px; padding:10px 20px; font-size:14px; cursor:pointer;'>Cancel</button>
+          <button id='upgrade-now-btn' style='background:linear-gradient(135deg,#7f53ac 0%,#647dee 100%); color:#fff; border:none; border-radius:8px; padding:12px 24px; font-size:15px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(127,83,172,0.3); transition:all 0.2s;'>Upgrade Now</button>
+          <button id='upgrade-cancel-btn' style='background:#f3f4f6; color:#666; border:none; border-radius:8px; padding:12px 24px; font-size:15px; cursor:pointer;'>Cancel</button>
         </div>
       </div>
     `);
@@ -1060,17 +1124,57 @@ checkAndShowSummarizeNotification();
     };
   }
 
-  // --- Menu Logic (global scope) ---
+  // --- Check usage and show/hide upgrade button ---
+  async function checkUsageAndUpdateMenu() {
+    try {
+      const token = await getAuthToken();
+      if (!token) return;
+
+      const response = await fetch(`${SERVER_URL}/api/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const user = data.user;
+        
+        if (user.usage && user.usage.plan === 'free' && user.usage.currentUsage >= user.usage.limit) {
+          // Show upgrade button when limit is reached
+          const upgradeBtn = document.getElementById('ai-assistant-menu-upgrade');
+          if (upgradeBtn) {
+            upgradeBtn.style.display = 'block';
+          }
+        } else {
+          // Hide upgrade button when not at limit
+          const upgradeBtn = document.getElementById('ai-assistant-menu-upgrade');
+          if (upgradeBtn) {
+            upgradeBtn.style.display = 'none';
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error checking usage:', error);
+    }
+  }
+
+  // --- Open Menu (updated to check usage) ---
   function openMenu() {
     const menu = document.getElementById('ai-assistant-robot-menu');
     if (menu) {
       menu.classList.add('open');
+      // Check usage when menu opens
+      checkUsageAndUpdateMenu();
       setTimeout(() => {
         const first = menu.querySelector('.ai-assistant-robot-menu-item');
         if (first) first.focus();
       }, 0);
     }
   }
+
+  // --- Close Menu ---
   function closeMenu() {
     const menu = document.getElementById('ai-assistant-robot-menu');
     if (menu) menu.classList.remove('open');
@@ -1400,6 +1504,7 @@ checkAndShowSummarizeNotification();
     menu.innerHTML = `
       <div class="ai-assistant-robot-menu-item" id="ai-assistant-menu-summarize" tabindex="0" role="menuitem"><span class="ai-menu-icon">📝</span>Summarize this page</div>
       <div class="ai-assistant-robot-menu-item" id="ai-assistant-menu-fill" tabindex="0" role="menuitem"><span class="ai-menu-icon">✍️</span>Fill selected field</div>
+      <div class="ai-assistant-robot-menu-item" id="ai-assistant-menu-upgrade" tabindex="0" role="menuitem" style="display: none;"><span class="ai-menu-icon">🚀</span>Upgrade to Pro</div>
     `;
     document.body.appendChild(menu);
 
@@ -1436,6 +1541,12 @@ checkAndShowSummarizeNotification();
       fillFieldAction();
     };
 
+    // --- Upgrade to Pro ---
+    document.getElementById('ai-assistant-menu-upgrade').onclick = () => {
+      closeMenu();
+      window.open('https://myassistanthub.com/#pricing', '_blank');
+    };
+
     // --- Message handling from popup ---
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.action === 'assistantVisibilityChanged') {
@@ -1453,28 +1564,6 @@ checkAndShowSummarizeNotification();
       }
     });
   }
-
-  // --- Config Menu (API Key Only) ---
-  window.showAIConfig = function() {
-    chrome.storage.sync.get(['openai_api_key'], (result) => {
-      let connected = !!result.openai_api_key;
-      let modal = showModal(`
-        <div style='font-size:17px; font-weight:500; margin-bottom:10px;'>ChatGPT: <span style='color:${connected ? '#4caf50' : '#c00'}; font-weight:600;'>${connected ? 'Connected' : 'Not Connected'}</span></div>
-        <input type='text' id='ai-api-key-input' placeholder='sk-...' value='${connected ? result.openai_api_key : ''}' style='margin-bottom:10px; width:100%;'/>
-        <button id='ai-api-key-save'>${connected ? 'Change' : 'Connect'}</button>
-      `);
-      document.getElementById('ai-api-key-save').onclick = () => {
-        const key = document.getElementById('ai-api-key-input').value.trim();
-        if (key.startsWith('sk-')) {
-          chrome.storage.sync.set({ openai_api_key: key }, () => {
-            modal.remove();
-          });
-} else {
-          alert('Please enter a valid OpenAI API key.');
-        }
-      };
-    });
-  };
 
   function removeAssistant() {
     if (!window.__ai_assistant_robot_injected) return;

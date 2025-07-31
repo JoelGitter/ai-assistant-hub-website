@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initContactForm();
     initMobileMenu();
     initLazyLoading();
+    // Removed initAnalytics() - not allowed in Manifest V3
 });
 
 // Navigation functionality
@@ -265,74 +266,6 @@ function initLazyLoading() {
             img.src = img.dataset.src;
         });
     }
-}
-
-// Analytics tracking (Google Analytics 4)
-function initAnalytics() {
-    // Get GA4 measurement ID from config
-    const GA_MEASUREMENT_ID = config.analytics.measurementId;
-    
-    if (GA_MEASUREMENT_ID) {
-        // Google Analytics 4
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', GA_MEASUREMENT_ID);
-        
-        // Load GA script
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-        document.head.appendChild(script);
-        
-        // Track events
-        trackEvents();
-    }
-}
-
-// Track user interactions
-function trackEvents() {
-    // Track extension install clicks
-    const installButtons = document.querySelectorAll('a[href*="chrome.google.com"]');
-    installButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'click', {
-                    event_category: 'engagement',
-                    event_label: 'extension_install',
-                    value: 1
-                });
-            }
-        });
-    });
-    
-    // Track form submissions
-    const contactForm = document.getElementById('contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', () => {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'submit', {
-                    event_category: 'engagement',
-                    event_label: 'contact_form',
-                    value: 1
-                });
-            }
-        });
-    }
-    
-    // Track pricing clicks
-    const pricingButtons = document.querySelectorAll('.pricing-card .btn');
-    pricingButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'click', {
-                    event_category: 'engagement',
-                    event_label: 'pricing_click',
-                    value: 1
-                });
-            }
-        });
-    });
 }
 
 // Performance monitoring

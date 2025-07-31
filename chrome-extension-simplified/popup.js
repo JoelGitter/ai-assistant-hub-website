@@ -83,6 +83,9 @@ async function loadUserStatus() {
 
 // Show user information
 function showUserInfo(user) {
+    console.log('User data received:', user);
+    console.log('User usage data:', user.usage);
+    
     userInfo.classList.add('show');
     authForm.classList.remove('show');
     
@@ -94,13 +97,17 @@ function showUserInfo(user) {
     const remaining = user.usage ? user.usage.remaining : 10;
     const plan = user.usage ? user.usage.plan : 'free';
     
+    console.log('Usage values:', { currentUsage, limit, remaining, plan });
+    
     const remainingText = plan === 'pro' ? 'unlimited' : remaining;
     usageInfo.textContent = `${currentUsage}/${limit} requests used (${remainingText} remaining)`;
     
-    // Show upgrade link if free plan and usage limit reached
+    // Always show upgrade link for free users
     const upgradeLink = document.getElementById('upgrade-link');
-    if (plan === 'free' && currentUsage >= limit) {
+    if (plan === 'free') {
         upgradeLink.style.display = 'block';
+        upgradeLink.href = 'https://myassistanthub.com/#pricing';
+        upgradeLink.target = '_blank';
     } else {
         upgradeLink.style.display = 'none';
     }

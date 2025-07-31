@@ -60,7 +60,6 @@ class StripeService {
         cancel_url: cancelUrl,
         allow_promotion_codes: true,
         billing_address_collection: 'required',
-        customer_creation: 'always',
         // Enable automatic tax calculation
         automatic_tax: {
           enabled: true,
