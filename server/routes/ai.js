@@ -1,7 +1,7 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const OpenAI = require("openai");
-const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
 const {
   checkSubscriptionAccess,
   incrementUsage,
@@ -589,33 +589,67 @@ router.post(
       
       // Send email notification
       try {
-        const transporter = nodemailer.createTransporter({
-          service: 'gmail',
-          auth: {
-            user: process.env.EMAIL_USER || 'aiassistanthub@gmail.com',
-            pass: process.env.EMAIL_PASS
-          }
-        });
-
-        const mailOptions = {
-          from: process.env.EMAIL_USER || 'aiassistanthub@gmail.com',
+        // Use a more robust email configuration
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        const msg = {
           to: 'joelhenrycl@gmail.com',
+          from: 'aiassistanthub@gmail.com',
           subject: `[AI Assistant Hub Support] ${subject}`,
           html: `
-            <h2>New Support Request</h2>
-            <p><strong>From:</strong> ${email}</p>
-            <p><strong>User ID:</strong> ${userId}</p>
-            <p><strong>Subject:</strong> ${subject}</p>
-            <p><strong>URL:</strong> ${url}</p>
-            <p><strong>User Agent:</strong> ${userAgent}</p>
-            <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
-            <hr>
-            <h3>Message:</h3>
-            <p>${message.replace(/\n/g, '<br>')}</p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+              <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h2 style="color: #333; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                  🆘 New Support Request
+                </h2>
+                
+                <div style="margin-bottom: 20px;">
+                  <h3 style="color: #007bff; margin-bottom: 10px;">Request Details</h3>
+                  <p><strong>From:</strong> ${email}</p>
+                  <p><strong>User ID:</strong> ${userId}</p>
+                  <p><strong>Subject:</strong> ${subject}</p>
+                  <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                  <h3 style="color: #007bff; margin-bottom: 10px;">Technical Information</h3>
+                  <p><strong>URL:</strong> <a href="${url}" style="color: #007bff;">${url}</a></p>
+                  <p><strong>User Agent:</strong> <span style="font-size: 12px; color: #666;">${userAgent}</span></p>
+                </div>
+                
+                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
+                  <h3 style="color: #007bff; margin-bottom: 15px;">Message</h3>
+                  <div style="white-space: pre-wrap; line-height: 1.6; color: #333;">
+                    ${message.replace(/\n/g, '<br>')}
+                  </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                  <p>This is an automated support request from AI Assistant Hub.</p>
+                  <p>Please respond to the user at: <strong>${email}</strong></p>
+                </div>
+              </div>
+            </div>
+          `,
+          text: `
+New Support Request
+
+From: ${email}
+User ID: ${userId}
+Subject: ${subject}
+URL: ${url}
+User Agent: ${userAgent}
+Timestamp: ${new Date().toLocaleString()}
+
+Message:
+${message}
+
+---
+This is an automated support request from AI Assistant Hub.
+Please respond to the user at: ${email}
           `
         };
 
-        await transporter.sendMail(mailOptions);
+        await sgMail.send(msg);
         console.log("[Support] Email sent successfully to joelhenrycl@gmail.com");
       } catch (emailError) {
         console.error("[Support] Email sending failed:", emailError);
