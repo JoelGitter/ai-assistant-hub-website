@@ -589,11 +589,25 @@ router.post(
       
       // Send email notification
       try {
+        // Check if SendGrid API key is configured
+        if (!process.env.SENDGRID_API_KEY) {
+          console.error("[Support] SendGrid API key not configured");
+          return res.status(500).json({
+            error: "Email service not configured",
+            details: "SendGrid API key is missing"
+          });
+        }
+
+        console.log("[Support] Attempting to send email with SendGrid...");
+
         // Use a more robust email configuration
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         const msg = {
           to: 'joelhenrycl@gmail.com',
-          from: 'aiassistanthub@gmail.com',
+          from: {
+            email: 'aiassistanthub@gmail.com',
+            name: 'AI Assistant Hub Support'
+          },
           subject: `[AI Assistant Hub Support] ${subject}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
@@ -653,7 +667,10 @@ Please respond to the user at: ${email}
         console.log("[Support] Email sent successfully to joelhenrycl@gmail.com");
       } catch (emailError) {
         console.error("[Support] Email sending failed:", emailError);
-        // Don't fail the request if email fails
+        return res.status(500).json({
+          error: "Failed to send support request",
+          details: emailError.message
+        });
       }
       
       // For now, we'll just log it and return success
