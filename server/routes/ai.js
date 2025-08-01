@@ -558,7 +558,7 @@ router.post(
     incrementUsage,
     body("email").isEmail(),
     body("subject").isLength({ min: 1, max: 200 }),
-    body("message").isLength({ min: 10, max: 2000 }),
+    body("message").isString().isLength({ min: 10, max: 2000 }),
   ],
   async (req, res) => {
     try {
