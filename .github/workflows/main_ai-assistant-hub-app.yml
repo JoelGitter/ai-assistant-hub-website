@@ -1,6 +1,5 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
-# Trigger deployment - v4 - Test corrected federated identity
 
 name: Build and deploy Node.js app to Azure Web App - ai-assistant-hub-app
 
@@ -24,13 +23,11 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: npm install and build
+      - name: npm install, build, and test
         run: |
-          cd server
           npm install
           npm run build --if-present
-          cd ..
-          npm install
+          npm run test --if-present
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -44,7 +41,7 @@ jobs:
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -52,12 +49,12 @@ jobs:
           name: node-app
       
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_9DF71466FB354561B5F79F785FA1C4BC }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C079B312C21F4F37A113AC41E1E1342C }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_67DD3F6FD8B94A69A54365A530866644 }}
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -65,3 +62,4 @@ jobs:
           app-name: 'ai-assistant-hub-app'
           slot-name: 'Production'
           package: .
+          
