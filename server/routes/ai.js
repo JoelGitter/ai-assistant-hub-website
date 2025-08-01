@@ -599,7 +599,7 @@ router.post(
 
         const mailOptions = {
           from: process.env.EMAIL_USER || 'aiassistanthub@gmail.com',
-          to: 'joelrhenry99@gmail.com',
+          to: 'joelhenrycl@gmail.com',
           subject: `[AI Assistant Hub Support] ${subject}`,
           html: `
             <h2>New Support Request</h2>
@@ -616,7 +616,7 @@ router.post(
         };
 
         await transporter.sendMail(mailOptions);
-        console.log("[Support] Email sent successfully to joelrhenry99@gmail.com");
+        console.log("[Support] Email sent successfully to joelhenrycl@gmail.com");
       } catch (emailError) {
         console.error("[Support] Email sending failed:", emailError);
         // Don't fail the request if email fails
