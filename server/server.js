@@ -14,26 +14,43 @@ const billingRoutes = require('./routes/billing');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB (optional for testing)
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
+// Enhanced MongoDB connection with better error handling
+async function connectToMongoDB() {
+  if (!process.env.MONGODB_URI) {
+    console.log('⚠️  No MONGODB_URI provided - running without database');
+    return false;
+  }
+
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // 5 second timeout
+      socketTimeoutMS: 45000, // 45 second timeout
+    });
     console.log('✅ Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
+    return true;
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error.message);
     console.log('⚠️  Server will continue without database connection');
-  });
-} else {
-  console.log('⚠️  No MONGODB_URI provided - running without database');
+    return false;
+  }
 }
 
+// Initialize MongoDB connection
+let mongoConnected = false;
+connectToMongoDB().then(connected => {
+  mongoConnected = connected;
+});
+
 // Basic middleware
-app.use(helmet());
-app.use(cors());
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for Azure compatibility
+}));
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true
+}));
 app.use(compression());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
@@ -50,7 +67,9 @@ app.get('/health', (req, res) => {
     status: 'healthy',
     service: 'ai-assistant-hub-server',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    mongoConnected: mongoConnected,
+    port: PORT
   });
 });
 
@@ -59,7 +78,8 @@ app.get('/', (req, res) => {
   res.json({
     message: 'AI Assistant Hub API',
     version: '1.0.0',
-    status: 'running'
+    status: 'running',
+    mongoConnected: mongoConnected
   });
 });
 
@@ -74,14 +94,50 @@ app.use('*', (req, res) => {
 // Error handling
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
 });
 
-// Start server
-app.listen(PORT, () => {
+// Start server with better error handling
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+  console.log(`🌐 MongoDB connected: ${mongoConnected}`);
+});
+
+// Handle server errors
+server.on('error', (error) => {
+  console.error('❌ Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use`);
+  }
+  process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('Server closed');
+    mongoose.connection.close(() => {
+      console.log('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    console.log('Server closed');
+    mongoose.connection.close(() => {
+      console.log('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
 });
 
 module.exports = app; 
