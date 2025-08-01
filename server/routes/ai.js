@@ -42,7 +42,7 @@ router.post(
         });
       }
 
-      const { content, text, maxLength = 200 } = req.body;
+      const { content, text, maxLength = 200, isYouTubeVideo = false } = req.body;
       const contentToSummarize = content || text;
 
       if (!contentToSummarize) {
@@ -57,28 +57,57 @@ router.post(
           console.log("[AI] Attempting OpenAI API call...");
           console.log("[AI] Content length:", contentToSummarize.length);
           console.log("[AI] Max length:", maxLength);
+          console.log("[AI] Is YouTube video:", isYouTubeVideo);
+
+          // Different prompts for YouTube videos vs regular content
+          let systemPrompt;
+          if (isYouTubeVideo) {
+            systemPrompt = `You are an AI assistant that creates comprehensive, detailed summaries of YouTube video transcripts. 
+            
+            For YouTube videos, provide a thorough analysis that includes:
+            1. Main topics and themes discussed (3-8 key points)
+            2. Important details, facts, or insights mentioned
+            3. Key takeaways or conclusions
+            4. Notable quotes or statements (if any)
+            5. Structure and flow of the content
+            
+            Always return summaries as 5-8 numbered bullet points (1., 2., 3., etc.).
+            Each bullet point should be 2-3 sentences for comprehensive coverage.
+            Focus on providing substantial detail and insights from the video content.
+            If the video is long (1+ hours), provide more detailed analysis.
+            If the video is educational or informational, highlight the key learning points.
+            
+            Format the response exactly like this example:
+            1. First main topic with detailed explanation and key points discussed.
+            2. Second important theme with specific details and insights provided.
+            3. Third significant aspect with relevant facts and conclusions.
+            4. Fourth key point with notable details and implications.
+            5. Additional important content with comprehensive coverage.`;
+          } else {
+            systemPrompt = `You are an AI assistant that creates concise, structured summaries. 
+            Always return summaries as 3-8 numbered bullet points (1., 2., 3., etc.).
+            Each bullet point should be 1-2 sentences maximum.
+            Focus on the key points, main ideas, and important details.
+            Format the response exactly like this example:
+            1. First key point about the main topic.
+            2. Second important detail or finding.
+            3. Third significant aspect or conclusion.
+            4. Fourth relevant point or implication.`;
+          }
 
           const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
               {
                 role: "system",
-                content: `You are an AI assistant that creates concise, structured summaries. 
-              Always return summaries as 3-6 numbered bullet points (1., 2., 3., etc.).
-              Each bullet point should be 1-2 sentences maximum.
-              Focus on the key points, main ideas, and important details.
-              Format the response exactly like this example:
-              1. First key point about the main topic.
-              2. Second important detail or finding.
-              3. Third significant aspect or conclusion.
-              4. Fourth relevant point or implication.`,
+                content: systemPrompt,
               },
               {
                 role: "user",
-                content: `Please summarize this content in 3-6 numbered bullet points: ${contentToSummarize}`,
+                content: `Please provide a comprehensive summary of this ${isYouTubeVideo ? 'video transcript' : 'content'}: ${contentToSummarize}`,
               },
             ],
-            max_tokens: 500,
+            max_tokens: isYouTubeVideo ? 1000 : 500, // More tokens for YouTube videos
             temperature: 0.3,
           });
 
@@ -100,23 +129,12 @@ router.post(
           }.`;
         }
       } else {
-        console.log("[AI] OpenAI not initialized - using mock response");
-        // Mock response when OpenAI is not configured - structured bullet points
-        summary = `1. This is a test summary of the content for demonstration purposes.
-2. The original text was: "${contentToSummarize.substring(0, 50)}..." 
-3. This is a mock response for testing the Chrome extension functionality.
-4. In production, this would be replaced with real AI-generated bullet points.`;
-      }
-
-      // Increment usage after successful response is sent
-      try {
-        await incrementUsage(req, res, () => {});
-      } catch (error) {
-        console.error("Error incrementing usage:", error);
-        return res.status(500).json({ 
-          error: "Usage tracking failed", 
-          details: error.message 
-        });
+        // Mock response for testing
+        console.log("[AI] Using mock response (no OpenAI API key)");
+        summary = `1. This is a mock summary for testing purposes.
+2. The content appears to be about various topics.
+3. In a real implementation, this would be generated by AI.
+4. Please add your OpenAI API key for actual summarization.`;
       }
 
       // Get updated usage stats AFTER incrementing
@@ -124,9 +142,9 @@ router.post(
         await getUsageStats(req, res, () => {});
       } catch (error) {
         console.error("Error getting usage stats:", error);
-        return res.status(500).json({ 
-          error: "Failed to get usage statistics", 
-          details: error.message 
+        return res.status(500).json({
+          error: "Failed to get usage statistics",
+          details: error.message
         });
       }
 
@@ -136,9 +154,9 @@ router.post(
         usage: res.locals.usageStats,
       });
     } catch (error) {
-      console.error("Error summarizing content:", error);
+      console.error("[AI] Summarize error:", error);
       res.status(500).json({
-        error: "Failed to summarize content",
+        error: "Internal server error",
         details: error.message,
       });
     }
@@ -524,6 +542,81 @@ router.post(
       console.error("Error analyzing text:", error);
       res.status(500).json({
         error: "Failed to analyze text",
+        details: error.message,
+      });
+    }
+  }
+);
+
+// Support request endpoint
+router.post(
+  "/support",
+  [
+    auth,
+    checkSubscriptionAccess,
+    incrementUsage,
+    body("email").isEmail(),
+    body("subject").isLength({ min: 1, max: 200 }),
+    body("message").isLength({ min: 10, max: 2000 }),
+  ],
+  async (req, res) => {
+    try {
+      // Check for validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: "Validation failed",
+          details: errors.array(),
+        });
+      }
+
+      const { email, subject, message, url, userAgent } = req.body;
+      const userId = req.user.id;
+
+      console.log("[Support] New support request received:", {
+        userId,
+        email,
+        subject,
+        url,
+        messageLength: message.length
+      });
+
+      // Here you would typically:
+      // 1. Save to database
+      // 2. Send email notification
+      // 3. Create ticket in support system
+      
+      // For now, we'll just log it and return success
+      console.log("[Support] Support request details:", {
+        userId,
+        email,
+        subject,
+        message: message.substring(0, 100) + "...",
+        url,
+        userAgent,
+        timestamp: new Date().toISOString()
+      });
+
+      // Get updated usage stats
+      try {
+        await getUsageStats(req, res, () => {});
+      } catch (error) {
+        console.error("Error getting usage stats:", error);
+        return res.status(500).json({
+          error: "Failed to get usage statistics",
+          details: error.message
+        });
+      }
+
+      res.json({
+        success: true,
+        message: "Support request submitted successfully",
+        usage: res.locals.usageStats,
+      });
+    } catch (error) {
+      console.error("[Support] Error processing support request:", error);
+      res.status(500).json({
+        error: "Internal server error",
         details: error.message,
       });
     }
