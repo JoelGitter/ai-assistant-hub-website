@@ -1,14 +1,16 @@
 // AI Assistant Hub Website JavaScript
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all components
+    // Initialize all functionality
     initNavigation();
+    initMobileMenu();
     initSmoothScrolling();
     initFAQ();
     initScrollAnimations();
     initContactForm();
-    initMobileMenu();
     initLazyLoading();
+    initPerformanceMonitoring();
+    initStripeCheckout();
     initVideoModal();
 });
 
