@@ -1,6 +1,7 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const OpenAI = require("openai");
+const nodemailer = require("nodemailer");
 const {
   checkSubscriptionAccess,
   incrementUsage,
@@ -585,6 +586,41 @@ router.post(
       // 1. Save to database
       // 2. Send email notification
       // 3. Create ticket in support system
+      
+      // Send email notification
+      try {
+        const transporter = nodemailer.createTransporter({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USER || 'aiassistanthub@gmail.com',
+            pass: process.env.EMAIL_PASS
+          }
+        });
+
+        const mailOptions = {
+          from: process.env.EMAIL_USER || 'aiassistanthub@gmail.com',
+          to: 'joelrhenry99@gmail.com',
+          subject: `[AI Assistant Hub Support] ${subject}`,
+          html: `
+            <h2>New Support Request</h2>
+            <p><strong>From:</strong> ${email}</p>
+            <p><strong>User ID:</strong> ${userId}</p>
+            <p><strong>Subject:</strong> ${subject}</p>
+            <p><strong>URL:</strong> ${url}</p>
+            <p><strong>User Agent:</strong> ${userAgent}</p>
+            <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
+            <hr>
+            <h3>Message:</h3>
+            <p>${message.replace(/\n/g, '<br>')}</p>
+          `
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log("[Support] Email sent successfully to joelrhenry99@gmail.com");
+      } catch (emailError) {
+        console.error("[Support] Email sending failed:", emailError);
+        // Don't fail the request if email fails
+      }
       
       // For now, we'll just log it and return success
       console.log("[Support] Support request details:", {
