@@ -60,7 +60,7 @@ router.post('/register', [
       if (process.env.SENDGRID_API_KEY) {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         
-        const verificationUrl = `${process.env.SERVER_URL || 'https://ai-assistant-hub-app.azurewebsites.net'}/api/auth/verify-email?token=${verificationToken}`;
+        const verificationUrl = `${process.env.FRONTEND_URL || 'https://myassistanthub.com'}/verify-email?token=${verificationToken}`;
         
         const msg = {
           to: email,
@@ -479,31 +479,10 @@ router.get('/verify-email', async (req, res) => {
     user.emailVerificationExpires = undefined;
     await user.save();
 
-    // Return a simple HTML page instead of JSON
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Email Verified - AI Assistant Hub</title>
-        <style>
-          body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-          .container { background: white; color: #333; padding: 40px; border-radius: 15px; max-width: 500px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-          h1 { color: #4CAF50; margin-bottom: 20px; }
-          p { line-height: 1.6; margin-bottom: 20px; }
-          .button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin-top: 20px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>✅ Email Verified Successfully!</h1>
-          <p>Hi ${user.name},</p>
-          <p>Your email address has been verified successfully! You can now use all features of AI Assistant Hub.</p>
-          <p>You can close this window and return to the extension.</p>
-          <a href="https://myassistanthub.com" class="button">Visit Website</a>
-        </div>
-      </body>
-      </html>
-    `);
+    res.json({
+      message: 'Email verified successfully! You can now use all features of AI Assistant Hub.',
+      user: user.toSafeObject()
+    });
 
   } catch (error) {
     console.error('Error verifying email:', error);
@@ -548,7 +527,7 @@ router.post('/resend-verification', [
       if (process.env.SENDGRID_API_KEY) {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         
-        const verificationUrl = `${process.env.SERVER_URL || 'https://ai-assistant-hub-app.azurewebsites.net'}/api/auth/verify-email?token=${verificationToken}`;
+        const verificationUrl = `${process.env.FRONTEND_URL || 'https://myassistanthub.com'}/verify-email?token=${verificationToken}`;
         
         const msg = {
           to: email,
