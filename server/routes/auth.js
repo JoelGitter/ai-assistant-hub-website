@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
-  body('name').isLength({ min: 2 }).trim()
+  body('name').isString().isLength({ min: 2, max: 50 }).trim()
 ], async (req, res) => {
   try {
     // Check for validation errors
