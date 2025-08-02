@@ -605,7 +605,7 @@ router.post(
         const msg = {
           to: 'joelhenrycl@gmail.com',
           from: {
-            email: 'aiassistanthub@gmail.com',
+            email: process.env.SENDGRID_FROM_EMAIL || 'noreply@aiassistanthub.com',
             name: 'AI Assistant Hub Support'
           },
           subject: `[AI Assistant Hub Support] ${subject}`,

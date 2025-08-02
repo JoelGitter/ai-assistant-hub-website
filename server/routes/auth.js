@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const crypto = require('crypto');
+const sgMail = require('@sendgrid/mail');
 const User = require('../models/User');
 const { auth } = require('../middleware/auth');
 const router = express.Router();
@@ -37,7 +38,90 @@ router.post('/register', [
       name
     });
 
+    // Generate email verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    user.emailVerificationToken = verificationToken;
+    user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
     await user.save();
+
+    // Send verification email
+    try {
+      if (process.env.SENDGRID_API_KEY) {
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        
+        const verificationUrl = `${process.env.FRONTEND_URL || 'https://myassistanthub.com'}/verify-email?token=${verificationToken}`;
+        
+        const msg = {
+          to: email,
+          from: {
+            email: process.env.SENDGRID_FROM_EMAIL || 'noreply@aiassistanthub.com',
+            name: 'AI Assistant Hub'
+          },
+          subject: 'Verify your email address - AI Assistant Hub',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+              <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h2 style="color: #333; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                  🎉 Welcome to AI Assistant Hub!
+                </h2>
+                
+                <p style="font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 20px;">
+                  Hi ${name},
+                </p>
+                
+                <p style="font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 20px;">
+                  Thank you for registering with AI Assistant Hub! To complete your registration and unlock all features, please verify your email address.
+                </p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${verificationUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
+                    Verify Email Address
+                  </a>
+                </div>
+                
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                  If the button doesn't work, you can copy and paste this link into your browser:
+                </p>
+                
+                <p style="font-size: 14px; color: #007bff; word-break: break-all; margin-bottom: 20px;">
+                  ${verificationUrl}
+                </p>
+                
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                  This verification link will expire in 24 hours.
+                </p>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                  <p>If you didn't create an account with AI Assistant Hub, you can safely ignore this email.</p>
+                </div>
+              </div>
+            </div>
+          `,
+          text: `
+Welcome to AI Assistant Hub!
+
+Hi ${name},
+
+Thank you for registering with AI Assistant Hub! To complete your registration and unlock all features, please verify your email address.
+
+Verify your email: ${verificationUrl}
+
+This verification link will expire in 24 hours.
+
+If you didn't create an account with AI Assistant Hub, you can safely ignore this email.
+          `
+        };
+
+        await sgMail.send(msg);
+        console.log(`[Auth] Verification email sent to ${email}`);
+      } else {
+        console.log(`[Auth] SendGrid not configured - verification email would be sent to ${email}`);
+      }
+    } catch (emailError) {
+      console.error('[Auth] Failed to send verification email:', emailError);
+      // Don't fail registration if email fails
+    }
 
     // Generate JWT token
     const token = jwt.sign(
@@ -47,7 +131,7 @@ router.post('/register', [
     );
 
     res.status(201).json({
-      message: 'User registered successfully',
+      message: 'User registered successfully. Please check your email to verify your account.',
       token,
       user: user.toSafeObject()
     });
@@ -354,6 +438,165 @@ router.get('/me', auth, async (req, res) => {
   } catch (error) {
     console.error('Error getting current user:', error);
     res.status(401).json({ error: 'Invalid token' });
+  }
+});
+
+// Verify email with token
+router.get('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({ error: 'Verification token is required' });
+    }
+
+    // Find user with this verification token
+    const user = await User.findOne({
+      emailVerificationToken: token,
+      emailVerificationExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ 
+        error: 'Invalid or expired verification token',
+        message: 'The verification link is invalid or has expired. Please request a new verification email.'
+      });
+    }
+
+    // Mark email as verified
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save();
+
+    res.json({
+      message: 'Email verified successfully! You can now use all features of AI Assistant Hub.',
+      user: user.toSafeObject()
+    });
+
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    res.status(500).json({ error: 'Failed to verify email' });
+  }
+});
+
+// Resend verification email
+router.post('/resend-verification', [
+  body('email').isEmail().normalizeEmail()
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: errors.array() 
+      });
+    }
+
+    const { email } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({ error: 'Email is already verified' });
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    user.emailVerificationToken = verificationToken;
+    user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    await user.save();
+
+    // Send verification email
+    try {
+      if (process.env.SENDGRID_API_KEY) {
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        
+        const verificationUrl = `${process.env.FRONTEND_URL || 'https://myassistanthub.com'}/verify-email?token=${verificationToken}`;
+        
+        const msg = {
+          to: email,
+          from: {
+            email: process.env.SENDGRID_FROM_EMAIL || 'noreply@aiassistanthub.com',
+            name: 'AI Assistant Hub'
+          },
+          subject: 'Verify your email address - AI Assistant Hub',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+              <div style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h2 style="color: #333; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">
+                  📧 Email Verification
+                </h2>
+                
+                <p style="font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 20px;">
+                  Hi ${user.name},
+                </p>
+                
+                <p style="font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 20px;">
+                  You requested a new verification email for your AI Assistant Hub account. Please verify your email address to unlock all features.
+                </p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                  <a href="${verificationUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
+                    Verify Email Address
+                  </a>
+                </div>
+                
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                  If the button doesn't work, you can copy and paste this link into your browser:
+                </p>
+                
+                <p style="font-size: 14px; color: #007bff; word-break: break-all; margin-bottom: 20px;">
+                  ${verificationUrl}
+                </p>
+                
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
+                  This verification link will expire in 24 hours.
+                </p>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                  <p>If you didn't request this verification email, you can safely ignore it.</p>
+                </div>
+              </div>
+            </div>
+          `,
+          text: `
+Email Verification
+
+Hi ${user.name},
+
+You requested a new verification email for your AI Assistant Hub account. Please verify your email address to unlock all features.
+
+Verify your email: ${verificationUrl}
+
+This verification link will expire in 24 hours.
+
+If you didn't request this verification email, you can safely ignore it.
+          `
+        };
+
+        await sgMail.send(msg);
+        console.log(`[Auth] Verification email resent to ${email}`);
+      } else {
+        console.log(`[Auth] SendGrid not configured - verification email would be sent to ${email}`);
+      }
+    } catch (emailError) {
+      console.error('[Auth] Failed to send verification email:', emailError);
+      return res.status(500).json({ error: 'Failed to send verification email' });
+    }
+
+    res.json({
+      message: 'Verification email sent successfully. Please check your inbox.'
+    });
+
+  } catch (error) {
+    console.error('Error resending verification email:', error);
+    res.status(500).json({ error: 'Failed to resend verification email' });
   }
 });
 
