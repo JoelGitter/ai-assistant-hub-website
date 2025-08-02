@@ -11,19 +11,29 @@ const router = express.Router();
 router.post('/register', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
-  body('name').isString().isLength({ min: 2, max: 50 }).trim()
+  body('username').isString().isLength({ min: 2, max: 50 }).trim()
 ], async (req, res) => {
   try {
+    // Debug: Log the incoming request data
+    console.log('[Auth] Registration attempt:', {
+      body: req.body,
+      email: req.body.email,
+      password: req.body.password ? '***' : 'missing',
+      username: req.body.username,
+      usernameType: typeof req.body.username
+    });
+
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('[Auth] Validation errors:', errors.array());
       return res.status(400).json({ 
         error: 'Validation failed', 
         details: errors.array() 
       });
     }
 
-    const { email, password, name } = req.body;
+    const { email, password, username } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -35,7 +45,7 @@ router.post('/register', [
     const user = new User({
       email,
       password,
-      name
+      name: username // Use username as the name field
     });
 
     // Generate email verification token
@@ -67,7 +77,7 @@ router.post('/register', [
                 </h2>
                 
                 <p style="font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 20px;">
-                  Hi ${name},
+                  Hi ${username},
                 </p>
                 
                 <p style="font-size: 16px; line-height: 1.6; color: #333; margin-bottom: 20px;">
@@ -101,7 +111,7 @@ router.post('/register', [
           text: `
 Welcome to AI Assistant Hub!
 
-Hi ${name},
+Hi ${username},
 
 Thank you for registering with AI Assistant Hub! To complete your registration and unlock all features, please verify your email address.
 
