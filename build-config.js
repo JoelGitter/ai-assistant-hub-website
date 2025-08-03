@@ -12,7 +12,7 @@ const environment = process.argv[2] || 'production';
 const configs = {
     development: {
         stripe: {
-            publishableKey: 'pk_test_your_test_key_here',
+            publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_your_test_key_here',
             priceIds: {
                 proMonthly: 'price_test_monthly',
                 proYearly: 'price_test_yearly'
@@ -32,9 +32,9 @@ const configs = {
     },
     production: {
         stripe: {
-            publishableKey: 'pk_live_51Rolv8I5JHWOZqzkQzDNnxsFw1q350Kqu0OdLBM9G1XKuhSXclErAds7w2qZ9g4HvUjqTnu2vVXI8vdNhLUBX9Dn00Y8s2BKkU',
+            publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_your_test_key_here',
             priceIds: {
-                proMonthly: 'price_1RpKAYI5JHWOZqzklUS9vUna'
+                proMonthly: 'price_1RqwlBI5JHWOZqzkNDhcorZk'
             }
         },
         analytics: {
