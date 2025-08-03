@@ -4,7 +4,7 @@
 const config = {
     // Stripe Configuration
     stripe: {
-        publishableKey: 'pk_test_your_test_key_here',
+        publishableKey: 'pk_live_51Rolv8I5JHWOZqzkQzDNnxsFw1q350Kqu0OdLBM9G1XKuhSXclErAds7w2qZ9g4HvUjqTnu2vVXI8vdNhLUBX9Dn00Y8s2BKkU',
         priceIds: {
             proMonthly: 'price_1RqwlBI5JHWOZqzkNDhcorZk'
         }
