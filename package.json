@@ -6,7 +6,8 @@
     "start": "cd server && npm start",
     "dev": "cd server && npm run dev",
     "install-deps": "cd server && npm install",
-    "postinstall": "cd server && npm install"
+    "postinstall": "cd server && npm install",
+    "build": "node website/build-config.js production"
   },
   "engines": {
     "node": ">=18.0.0"
