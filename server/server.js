@@ -53,13 +53,17 @@ app.use(cors({
 }));
 app.use(compression());
 app.use(morgan('combined'));
+
+// Billing routes (including webhook) must come BEFORE JSON middleware
+app.use('/api/billing', billingRoutes);
+
+// JSON middleware for other routes
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Routes
+// Other routes
 app.use('/api/ai', aiRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/billing', billingRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
