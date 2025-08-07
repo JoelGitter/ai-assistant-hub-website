@@ -43,6 +43,12 @@ function initMobileMenu() {
     const navMenu = document.getElementById('nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
 
+    // Only initialize if elements exist
+    if (!navToggle || !navMenu) {
+        console.log('Mobile menu elements not found, skipping initialization');
+        return;
+    }
+
     navToggle.addEventListener('click', function() {
         navToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
@@ -269,6 +275,12 @@ function initLazyLoading() {
 
 // Analytics tracking (Google Analytics 4)
 function initAnalytics() {
+    // Check if config is available
+    if (typeof config === 'undefined' || !config.analytics) {
+        console.log('Analytics config not available, skipping initialization');
+        return;
+    }
+
     // Get GA4 measurement ID from config
     const GA_MEASUREMENT_ID = config.analytics.measurementId;
     
@@ -373,67 +385,366 @@ function initPerformanceMonitoring() {
 
 // Stripe checkout functionality
 function initStripeCheckout() {
-    // Initialize Stripe with your publishable key from config
-    const stripe = Stripe(config.stripe.publishableKey);
-    
     // Pro Monthly Plan
     const proMonthlyBtn = document.getElementById('pro-plan-btn');
     if (proMonthlyBtn) {
-        proMonthlyBtn.addEventListener('click', async () => {
-            try {
-                // Show loading state
-                proMonthlyBtn.textContent = 'Loading...';
-                proMonthlyBtn.disabled = true;
-                
-                // Create checkout session
-                const response = await fetch(config.api.baseUrl + config.api.billingEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        priceId: config.stripe.priceIds.proMonthly,
-                        successUrl: 'https://myassistanthub.com/success.html',
-                        cancelUrl: 'https://myassistanthub.com/#pricing'
-                    })
-                });
-                
-                const session = await response.json();
-                
-                if (session.error) {
-                    throw new Error(session.error);
-                }
-                
-                // Redirect to Stripe Checkout
-                const result = await stripe.redirectToCheckout({
-                    sessionId: session.sessionId
-                });
-                
-                if (result.error) {
-                    throw new Error(result.error.message);
-                }
-                
-                // Track the event
-                if (typeof gtag !== 'undefined') {
-                    gtag('event', 'begin_checkout', {
-                        event_category: 'ecommerce',
-                        event_label: 'pro_monthly',
-                        value: 9.99
-                    });
-                }
-                
-            } catch (error) {
-                console.error('Checkout error:', error);
-                showNotification('Unable to start checkout. Please try again.', 'error');
-                
-                // Reset button
-                proMonthlyBtn.textContent = 'Upgrade to Pro';
-                proMonthlyBtn.disabled = false;
+        proMonthlyBtn.addEventListener('click', () => {
+            // Check if user is logged in
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showLoginModal();
+                return;
             }
+            
+            triggerStripeCheckout();
         });
     }
-    
+}
 
+// Show login modal
+function showLoginModal() {
+    // Remove existing modals
+    const existingModals = document.querySelectorAll('.modal');
+    existingModals.forEach(modal => modal.remove());
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to Upgrade</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <div class="modal-footer">
+                    <p>Don't have an account? <a href="#" id="show-register">Register</a></p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add styles
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    `;
+    
+    const modalContent = modal.querySelector('.modal-content');
+    modalContent.style.cssText = `
+        background: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        max-width: 400px;
+        width: 90%;
+        position: relative;
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close modal functionality
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.addEventListener('click', () => modal.remove());
+    
+    // Close on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+    
+    // Show register modal
+    const showRegisterBtn = modal.querySelector('#show-register');
+    showRegisterBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.remove();
+        showRegisterModal();
+    });
+    
+    // Handle login form
+    const loginForm = modal.querySelector('#login-form');
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(loginForm);
+        const email = formData.get('email');
+        const password = formData.get('password');
+        
+        try {
+            const response = await fetch(`${config.api.baseUrl}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem('authToken', data.token);
+                showNotification('Login successful!', 'success');
+                modal.remove();
+                triggerStripeCheckout();
+            } else {
+                showNotification(data.error || 'Login failed', 'error');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            showNotification('Login failed. Please try again.', 'error');
+        }
+    });
+    
+    // Close on ESC key
+    document.addEventListener('keydown', function closeOnEsc(e) {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', closeOnEsc);
+        }
+    });
+}
+
+// Show register modal
+function showRegisterModal() {
+    // Remove existing modals
+    const existingModals = document.querySelectorAll('.modal');
+    existingModals.forEach(modal => modal.remove());
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-name">Name</label>
+                        <input type="text" id="register-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" name="password" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                </form>
+                <div class="modal-footer">
+                    <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add styles
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    `;
+    
+    const modalContent = modal.querySelector('.modal-content');
+    modalContent.style.cssText = `
+        background: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        max-width: 400px;
+        width: 90%;
+        position: relative;
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close modal functionality
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.addEventListener('click', () => modal.remove());
+    
+    // Close on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+    
+    // Show login modal
+    const showLoginBtn = modal.querySelector('#show-login');
+    showLoginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.remove();
+        showLoginModal();
+    });
+    
+    // Handle register form
+    const registerForm = modal.querySelector('#register-form');
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(registerForm);
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const password = formData.get('password');
+        
+        try {
+            const response = await fetch(`${config.api.baseUrl}/api/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem('authToken', data.token);
+                showNotification('Account created successfully! Please check your email for verification.', 'success');
+                modal.remove();
+                triggerStripeCheckout();
+            } else {
+                showNotification(data.error || 'Registration failed', 'error');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            showNotification('Registration failed. Please try again.', 'error');
+        }
+    });
+    
+    // Close on ESC key
+    document.addEventListener('keydown', function closeOnEsc(e) {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', closeOnEsc);
+        }
+    });
+}
+
+// Trigger Stripe checkout
+function triggerStripeCheckout() {
+    const proMonthlyBtn = document.getElementById('pro-plan-btn');
+    
+    // Initialize Stripe at the top level
+    const stripe = Stripe(config.stripe.publishableKey);
+    
+    // Get the stored token
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+        showNotification('Please log in to upgrade to Pro.', 'warning');
+        return;
+    }
+    
+    // Validate user subscription status
+    fetch(`${config.api.baseUrl}/api/auth/me`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    }).then(userResponse => {
+        if (!userResponse.ok) {
+            // Token is invalid, remove it and show login
+            localStorage.removeItem('authToken');
+            showLoginModal();
+            return;
+        }
+
+        return userResponse.json();
+    }).then(userData => {
+        if (!userData) return;
+        
+        const user = userData.user;
+
+        // Check if user already has an active subscription
+        if (user.usageStats.plan === 'pro' && user.usageStats.status === 'active') {
+            showNotification('You already have an active Pro subscription!', 'info');
+            return;
+        }
+
+        // Show loading state
+        if (proMonthlyBtn) {
+            proMonthlyBtn.textContent = 'Loading...';
+            proMonthlyBtn.disabled = true;
+        }
+        
+        // Create checkout session for authenticated user
+        return fetch(config.api.baseUrl + config.api.billingEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                priceId: config.stripe.priceIds.proMonthly,
+                successUrl: 'https://myassistanthub.com/success.html',
+                cancelUrl: 'https://myassistanthub.com/#pricing'
+            })
+        });
+    }).then(response => {
+        if (!response) return;
+        
+        return response.json();
+    }).then(session => {
+        if (!session) return;
+        
+        if (session.error) {
+            throw new Error(session.error);
+        }
+        
+        // Redirect to Stripe Checkout
+        return stripe.redirectToCheckout({
+            sessionId: session.sessionId
+        });
+    }).then(result => {
+        if (!result) return;
+        
+        if (result.error) {
+            throw new Error(result.error.message);
+        }
+        
+        // Track the event
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'begin_checkout', {
+                event_category: 'ecommerce',
+                event_label: 'pro_monthly',
+                value: 9.99
+            });
+        }
+        
+    }).catch(error => {
+        console.error('Checkout error:', error);
+        showNotification('Unable to start checkout. Please try again.', 'error');
+        
+        // Reset button
+        if (proMonthlyBtn) {
+            proMonthlyBtn.textContent = 'Upgrade to Pro';
+            proMonthlyBtn.disabled = false;
+        }
+    });
 }
 
 // Initialize analytics and performance monitoring
