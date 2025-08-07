@@ -207,13 +207,20 @@ class StripeService {
         return;
       }
 
+      // Validate and convert date fields
+      const currentPeriodStart = subscription.current_period_start ? new Date(subscription.current_period_start * 1000) : null;
+      const currentPeriodEnd = subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null;
+
+      console.log('Date conversion - current_period_start:', subscription.current_period_start, '->', currentPeriodStart);
+      console.log('Date conversion - current_period_end:', subscription.current_period_end, '->', currentPeriodEnd);
+
       await user.updateSubscription({
         stripeSubscriptionId: subscription.id,
         plan: 'pro',
         status: subscription.status,
-        currentPeriodStart: new Date(subscription.current_period_start * 1000),
-        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        currentPeriodStart: currentPeriodStart,
+        currentPeriodEnd: currentPeriodEnd,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
         usage: {
           ...user.subscription.usage,
           requestsLimit: 1000 // Pro tier limit
@@ -238,11 +245,18 @@ class StripeService {
         return;
       }
 
+      // Validate and convert date fields
+      const currentPeriodStart = subscription.current_period_start ? new Date(subscription.current_period_start * 1000) : null;
+      const currentPeriodEnd = subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null;
+
+      console.log('Date conversion - current_period_start:', subscription.current_period_start, '->', currentPeriodStart);
+      console.log('Date conversion - current_period_end:', subscription.current_period_end, '->', currentPeriodEnd);
+
       await user.updateSubscription({
         status: subscription.status,
-        currentPeriodStart: new Date(subscription.current_period_start * 1000),
-        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-        cancelAtPeriodEnd: subscription.cancel_at_period_end
+        currentPeriodStart: currentPeriodStart,
+        currentPeriodEnd: currentPeriodEnd,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end || false
       });
 
       console.log('Subscription updated for user:', user.email);
