@@ -301,10 +301,17 @@ class StripeService {
       if (invoice.subscription) {
         const user = await User.findOne({ 'subscription.stripeSubscriptionId': invoice.subscription });
         if (user) {
+          // Validate and convert date fields
+          const currentPeriodStart = invoice.period_start ? new Date(invoice.period_start * 1000) : null;
+          const currentPeriodEnd = invoice.period_end ? new Date(invoice.period_end * 1000) : null;
+
+          console.log('Payment date conversion - period_start:', invoice.period_start, '->', currentPeriodStart);
+          console.log('Payment date conversion - period_end:', invoice.period_end, '->', currentPeriodEnd);
+
           await user.updateSubscription({
             status: 'active',
-            currentPeriodStart: new Date(invoice.period_start * 1000),
-            currentPeriodEnd: new Date(invoice.period_end * 1000)
+            currentPeriodStart: currentPeriodStart,
+            currentPeriodEnd: currentPeriodEnd
           });
           console.log('Payment processed for user:', user.email);
         }
@@ -324,13 +331,95 @@ class StripeService {
         const user = await User.findOne({ 'subscription.stripeSubscriptionId': invoice.subscription });
         if (user) {
           await user.updateSubscription({
-            status: 'past_due'
+            status: 'inactive',
+            plan: 'free',
+            usage: {
+              ...user.subscription.usage,
+              requestsLimit: 10 // Back to free tier limit
+            }
           });
-          console.log('Payment failed for user:', user.email);
+          console.log('Payment failed - reverted user to free plan:', user.email);
         }
       }
     } catch (error) {
       console.error('Error handling payment failed:', error);
+      throw error;
+    }
+  }
+
+  // Handle payment action required (3D Secure, etc.)
+  async handlePaymentActionRequired(invoice) {
+    try {
+      console.log('Processing payment action required:', invoice.id);
+      
+      if (invoice.subscription) {
+        const user = await User.findOne({ 'subscription.stripeSubscriptionId': invoice.subscription });
+        if (user) {
+          await user.updateSubscription({
+            status: 'past_due'
+          });
+          console.log('Payment action required for user:', user.email);
+        }
+      }
+    } catch (error) {
+      console.error('Error handling payment action required:', error);
+      throw error;
+    }
+  }
+
+  // Handle invoice finalized
+  async handleInvoiceFinalized(invoice) {
+    try {
+      console.log('Processing invoice finalized:', invoice.id);
+      
+      if (invoice.subscription) {
+        const user = await User.findOne({ 'subscription.stripeSubscriptionId': invoice.subscription });
+        if (user) {
+          // Don't change status yet, wait for payment success/failure
+          console.log('Invoice finalized for user:', user.email);
+        }
+      }
+    } catch (error) {
+      console.error('Error handling invoice finalized:', error);
+      throw error;
+    }
+  }
+
+  // Handle trial will end
+  async handleTrialWillEnd(subscription) {
+    try {
+      console.log('Processing trial will end:', subscription.id);
+      
+      const user = await User.findOne({ 'subscription.stripeSubscriptionId': subscription.id });
+      if (user) {
+        console.log('Trial ending soon for user:', user.email);
+        // Could send email notification here
+      }
+    } catch (error) {
+      console.error('Error handling trial will end:', error);
+      throw error;
+    }
+  }
+
+  // Handle trial ended
+  async handleTrialEnded(subscription) {
+    try {
+      console.log('Processing trial ended:', subscription.id);
+      
+      const user = await User.findOne({ 'subscription.stripeSubscriptionId': subscription.id });
+      if (user) {
+        await user.updateSubscription({
+          status: subscription.status,
+          plan: subscription.status === 'active' ? 'pro' : 'free',
+          usage: {
+            ...user.subscription.usage,
+            requestsLimit: subscription.status === 'active' ? 1000 : 10
+          }
+        });
+        console.log('Trial ended for user:', user.email);
+      }
+    } catch (error) {
+      console.error('Error handling trial ended:', error);
       throw error;
     }
   }
