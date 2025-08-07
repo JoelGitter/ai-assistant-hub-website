@@ -5,11 +5,12 @@ const User = require('../models/User');
 const { auth } = require('../middleware/auth');
 const router = express.Router();
 
-// Create checkout session
+// Create checkout session (requires authentication)
 router.post('/create-checkout-session', [
+  auth, // Require authentication
   body('priceId').isString().notEmpty(),
-  body('successUrl').isURL(),
-  body('cancelUrl').isURL()
+  body('successUrl').optional().isURL(),
+  body('cancelUrl').optional().isURL()
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -21,14 +22,19 @@ router.post('/create-checkout-session', [
       });
     }
 
-    const { priceId, successUrl, cancelUrl, customerEmail } = req.body;
+    const { priceId, successUrl, cancelUrl } = req.body;
+    const user = await User.findById(req.user.id);
 
-    // Create checkout session
-    const session = await stripeService.createCheckoutSession(
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Create checkout session for authenticated user
+    const session = await stripeService.createCheckoutSessionForUser(
+      user, 
       priceId, 
-      successUrl, 
-      cancelUrl, 
-      customerEmail
+      successUrl || 'https://myassistanthub.com/success.html',
+      cancelUrl || 'https://myassistanthub.com/#pricing'
     );
 
     res.json({
