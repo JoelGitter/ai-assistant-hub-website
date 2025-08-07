@@ -41,11 +41,11 @@ router.post('/create-checkout-session',
       }
 
       // Create checkout session for authenticated user
-      const session = await stripeService.createCheckoutSessionForUser(
-        user, 
+      const session = await stripeService.createCheckoutSession(
         priceId, 
         successUrl || 'https://myassistanthub.com/success.html',
-        cancelUrl || 'https://myassistanthub.com/#pricing'
+        cancelUrl || 'https://myassistanthub.com/#pricing',
+        user.email
       );
 
       res.json({
