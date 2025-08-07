@@ -8,14 +8,15 @@ const router = express.Router();
 // Create checkout session (requires authentication)
 router.post('/create-checkout-session', [
   auth, // Require authentication
-  body('priceId').notEmpty().withMessage('Price ID is required'),
-  body('successUrl').optional().isURL(),
-  body('cancelUrl').optional().isURL()
+  body('priceId').notEmpty().withMessage('Price ID is required').isString().withMessage('Price ID must be a string'),
+  body('successUrl').optional().isURL().withMessage('Success URL must be a valid URL'),
+  body('cancelUrl').optional().isURL().withMessage('Cancel URL must be a valid URL')
 ], async (req, res) => {
   try {
     // Debug: Log the request body
     console.log('Checkout session request body:', req.body);
     console.log('Price ID received:', req.body.priceId);
+    console.log('Price ID type:', typeof req.body.priceId);
     console.log('Success URL received:', req.body.successUrl);
     console.log('Cancel URL received:', req.body.cancelUrl);
     
