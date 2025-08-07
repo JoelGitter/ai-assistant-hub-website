@@ -680,7 +680,7 @@ function triggerStripeCheckout() {
         const user = userData.user;
 
         // Check if user already has an active subscription
-        if (user.usageStats.plan === 'pro' && user.usageStats.status === 'active') {
+        if (user.usage.plan === 'pro' && user.usage.status === 'active') {
             showNotification('You already have an active Pro subscription!', 'info');
             return;
         }
