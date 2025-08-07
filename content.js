@@ -336,15 +336,15 @@ function checkAndShowSummarizeNotification() {
 }
 
 // --- Global storage change listener ---
-chrome.storage.onChanged.addListener((changes, area) => {
+  chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'sync' && changes.assistant_notifications) {
     if (changes.assistant_notifications.newValue === true) {
       checkAndShowSummarizeNotification();
-    } else {
+      } else {
       removeSummarizeNotification();
+      }
     }
-  }
-});
+  });
 
 
 
@@ -567,53 +567,53 @@ function showUpgradeModal(msg) {
 }
 
 // --- Summarize Page Action (Global) ---
-async function summarizePageAction() {
-  const token = await getAuthToken();
-  if (!token) return;
-  
-  const spinner = showSpinnerModal('AI is reading the page...');
-  
-  try {
-    // Use Readability.js for best extraction
-    let text = getReadabilityText();
-    if (!text) {
-      // Fallback to previous logic
-      const main = document.querySelector('main, article, section');
-      if (main) {
-        text = main.innerText;
-      } else {
-        text = document.body.innerText;
+  async function summarizePageAction() {
+    const token = await getAuthToken();
+    if (!token) return;
+    
+    const spinner = showSpinnerModal('AI is reading the page...');
+    
+    try {
+      // Use Readability.js for best extraction
+      let text = getReadabilityText();
+      if (!text) {
+        // Fallback to previous logic
+        const main = document.querySelector('main, article, section');
+        if (main) {
+          text = main.innerText;
+        } else {
+          text = document.body.innerText;
+        }
       }
-    }
-    text = text.replace(/\s+/g, ' ').trim().slice(0, 3000);
-    
-    const response = await fetch(`${SERVER_URL}/api/ai/summarize`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ text, url: window.location.href })
-    });
-    
-    const data = await response.json();
-    spinner.remove();
-    
-    if (response.ok && data.success) {
-      showSuccessModal('Summary', data.summary);
-    } else {
-      if (data.upgradeRequired) {
+      text = text.replace(/\s+/g, ' ').trim().slice(0, 3000);
+      
+      const response = await fetch(`${SERVER_URL}/api/ai/summarize`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text, url: window.location.href })
+      });
+      
+      const data = await response.json();
+      spinner.remove();
+      
+      if (response.ok && data.success) {
+        showSuccessModal('Summary', data.summary);
+      } else {
+        if (data.upgradeRequired) {
         showUpgradeModal('Free tier limit reached. Please upgrade to continue using the service.');
-      } else {
-        showErrorModal(data.error || 'Failed to summarize.');
+        } else {
+          showErrorModal(data.error || 'Failed to summarize.');
+        }
       }
+    } catch (error) {
+      spinner.remove();
+      console.error('Summarize error:', error);
+      showErrorModal('Connection error. Please try again.');
     }
-  } catch (error) {
-    spinner.remove();
-    console.error('Summarize error:', error);
-    showErrorModal('Connection error. Please try again.');
   }
-}
 
 // --- Initial notification check ---
 checkAndShowSummarizeNotification();

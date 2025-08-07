@@ -1141,7 +1141,7 @@ checkAndShowSummarizeNotification();
         const data = await response.json();
         const user = data.user;
         
-        if (user.usage && user.usage.plan === 'free' && user.usage.currentUsage >= user.usage.limit) {
+        if (user.usage && user.usage.plan === 'free' && user.usage.requestsThisMonth >= user.usage.limit) {
           // Show upgrade button when limit is reached
           const upgradeBtn = document.getElementById('ai-assistant-menu-upgrade');
           if (upgradeBtn) {

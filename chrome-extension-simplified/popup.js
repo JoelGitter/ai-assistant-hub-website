@@ -92,15 +92,15 @@ function showUserInfo(user) {
     userEmail.textContent = user.email;
     
     // Use the correct usage fields from the backend
-    const currentUsage = user.usage ? user.usage.currentUsage : 0;
+    const requestsThisMonth = user.usage ? user.usage.requestsThisMonth : 0;
     const limit = user.usage ? user.usage.limit : 10;
     const remaining = user.usage ? user.usage.remaining : 10;
     const plan = user.usage ? user.usage.plan : 'free';
     
-    console.log('Usage values:', { currentUsage, limit, remaining, plan });
+    console.log('Usage values:', { requestsThisMonth, limit, remaining, plan });
     
     const remainingText = plan === 'pro' ? 'unlimited' : remaining;
-    usageInfo.textContent = `${currentUsage}/${limit} requests used (${remainingText} remaining)`;
+    usageInfo.textContent = `${requestsThisMonth}/${limit} requests used (${remainingText} remaining)`;
     
     // Always show upgrade link for free users
     const upgradeLink = document.getElementById('upgrade-link');

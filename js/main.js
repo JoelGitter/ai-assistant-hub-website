@@ -275,14 +275,8 @@ function initLazyLoading() {
 
 // Analytics tracking (Google Analytics 4)
 function initAnalytics() {
-    // Check if config is available
-    if (typeof config === 'undefined' || !config.analytics) {
-        console.log('Analytics config not available, skipping initialization');
-        return;
-    }
-
-    // Get GA4 measurement ID from config
-    const GA_MEASUREMENT_ID = config.analytics.measurementId;
+    // Hardcoded GA4 measurement ID
+    const GA_MEASUREMENT_ID = 'G-BNQRGZZEHK';
     
     if (GA_MEASUREMENT_ID) {
         // Google Analytics 4
@@ -487,7 +481,7 @@ function showLoginModal() {
         const password = formData.get('password');
         
         try {
-            const response = await fetch(`${config.api.baseUrl}/api/auth/login`, {
+            const response = await fetch(`https://ai-assistant-hub-app.azurewebsites.net/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -611,7 +605,7 @@ function showRegisterModal() {
         const password = formData.get('password');
         
         try {
-            const response = await fetch(`${config.api.baseUrl}/api/auth/register`, {
+            const response = await fetch(`https://ai-assistant-hub-app.azurewebsites.net/api/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -648,8 +642,8 @@ function showRegisterModal() {
 function triggerStripeCheckout() {
     const proMonthlyBtn = document.getElementById('pro-plan-btn');
     
-    // Initialize Stripe at the top level
-    const stripe = Stripe(config.stripe.publishableKey);
+    // Initialize Stripe at the top level with hardcoded key
+    const stripe = Stripe('pk_live_51Rolv8I5JHWOZqzkQzDNnxsFw1q350Kqu0OdLBM9G1XKuhSXclErAds7w2qZ9g4HvUjqTnu2vVXI8vdNhLUBX9Dn00Y8s2BKkU');
     
     // Get the stored token
     const token = localStorage.getItem('authToken');
@@ -660,7 +654,7 @@ function triggerStripeCheckout() {
     }
     
     // Validate user subscription status
-    fetch(`${config.api.baseUrl}/api/auth/me`, {
+    fetch(`https://ai-assistant-hub-app.azurewebsites.net/api/auth/me`, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -692,14 +686,14 @@ function triggerStripeCheckout() {
         }
         
         // Create checkout session for authenticated user
-        return fetch(config.api.baseUrl + config.api.billingEndpoint, {
+        return fetch(`https://ai-assistant-hub-app.azurewebsites.net/api/billing/create-checkout-session`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                priceId: config.stripe.priceIds.proMonthly,
+                priceId: 'price_1RqwlBI5JHWOZqzkNDhcorZk',
                 successUrl: 'https://myassistanthub.com/success.html',
                 cancelUrl: 'https://myassistanthub.com/#pricing'
             })
