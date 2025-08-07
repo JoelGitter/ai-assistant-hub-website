@@ -72,6 +72,9 @@ class StripeService {
           metadata: {
             source: 'ai-assistant-hub'
           }
+        },
+        metadata: {
+          source: 'ai-assistant-hub'
         }
       };
 
@@ -143,11 +146,25 @@ class StripeService {
   async handleCheckoutSessionCompleted(session) {
     try {
       console.log('Processing checkout session completed:', session.id);
+      console.log('Session metadata:', session.metadata);
+      console.log('Customer details:', session.customer_details);
       
-      // Find user by email
-      const user = await User.findOne({ email: session.customer_details.email });
+      let user = null;
+      
+      // Try to find user by email first
+      if (session.customer_details?.email) {
+        user = await User.findOne({ email: session.customer_details.email });
+        console.log('Found user by email:', user ? user.email : 'not found');
+      }
+      
+      // If not found by email, try by customer ID
+      if (!user && session.customer) {
+        user = await User.findOne({ 'subscription.stripeCustomerId': session.customer });
+        console.log('Found user by customer ID:', user ? user.email : 'not found');
+      }
+      
       if (!user) {
-        console.error('User not found for checkout session:', session.customer_details.email);
+        console.error('User not found for checkout session. Email:', session.customer_details?.email, 'Customer ID:', session.customer);
         return;
       }
 
@@ -169,10 +186,24 @@ class StripeService {
   async handleSubscriptionCreated(subscription) {
     try {
       console.log('Processing subscription created:', subscription.id);
+      console.log('Subscription customer:', subscription.customer);
       
-      const user = await User.findOne({ 'subscription.stripeCustomerId': subscription.customer });
+      let user = null;
+      
+      // Try to find user by customer ID
+      if (subscription.customer) {
+        user = await User.findOne({ 'subscription.stripeCustomerId': subscription.customer });
+        console.log('Found user by customer ID:', user ? user.email : 'not found');
+      }
+      
+      // If not found, try by subscription ID
       if (!user) {
-        console.error('User not found for subscription:', subscription.customer);
+        user = await User.findOne({ 'subscription.stripeSubscriptionId': subscription.id });
+        console.log('Found user by subscription ID:', user ? user.email : 'not found');
+      }
+      
+      if (!user) {
+        console.error('User not found for subscription. Customer ID:', subscription.customer, 'Subscription ID:', subscription.id);
         return;
       }
 
