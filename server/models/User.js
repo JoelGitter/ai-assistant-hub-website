@@ -284,9 +284,30 @@ userSchema.methods.incrementUsage = async function() {
 };
 
 // Method to update subscription
-userSchema.methods.updateSubscription = function(subscriptionData) {
-  Object.assign(this.subscription, subscriptionData);
-  return this.save();
+userSchema.methods.updateSubscription = async function(subscriptionData) {
+  try {
+    // Use findByIdAndUpdate to avoid validation issues
+    const result = await this.constructor.findByIdAndUpdate(
+      this._id,
+      {
+        $set: {
+          'subscription': {
+            ...this.subscription.toObject(),
+            ...subscriptionData
+          }
+        }
+      },
+      { new: true } // Return the updated document
+    );
+    
+    // Update the current instance
+    Object.assign(this.subscription, subscriptionData);
+    
+    return result;
+  } catch (error) {
+    console.error('[Subscription] Update failed:', error);
+    throw error;
+  }
 };
 
 // Method to get user for API responses (excludes sensitive data)
