@@ -6,58 +6,62 @@ const { auth } = require('../middleware/auth');
 const router = express.Router();
 
 // Create checkout session (requires authentication)
-router.post('/create-checkout-session', [
-  auth, // Require authentication
-  body('priceId').notEmpty().withMessage('Price ID is required').isString().withMessage('Price ID must be a string'),
-  body('successUrl').optional().isURL().withMessage('Success URL must be a valid URL'),
-  body('cancelUrl').optional().isURL().withMessage('Cancel URL must be a valid URL')
-], async (req, res) => {
-  try {
-    // Debug: Log the request body
-    console.log('Checkout session request body:', req.body);
-    console.log('Price ID received:', req.body.priceId);
-    console.log('Price ID type:', typeof req.body.priceId);
-    console.log('Success URL received:', req.body.successUrl);
-    console.log('Cancel URL received:', req.body.cancelUrl);
-    
-    // Check for validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      console.log('Validation errors:', errors.array());
-      return res.status(400).json({ 
-        error: 'Validation failed', 
-        details: errors.array() 
+router.post('/create-checkout-session', 
+  express.json({ limit: '10mb' }), // Add JSON parsing for this route
+  [
+    auth, // Require authentication
+    body('priceId').notEmpty().withMessage('Price ID is required').isString().withMessage('Price ID must be a string'),
+    body('successUrl').optional().isURL().withMessage('Success URL must be a valid URL'),
+    body('cancelUrl').optional().isURL().withMessage('Cancel URL must be a valid URL')
+  ], 
+  async (req, res) => {
+    try {
+      // Debug: Log the request body
+      console.log('Checkout session request body:', req.body);
+      console.log('Price ID received:', req.body.priceId);
+      console.log('Price ID type:', typeof req.body.priceId);
+      console.log('Success URL received:', req.body.successUrl);
+      console.log('Cancel URL received:', req.body.cancelUrl);
+      
+      // Check for validation errors
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log('Validation errors:', errors.array());
+        return res.status(400).json({ 
+          error: 'Validation failed', 
+          details: errors.array() 
+        });
+      }
+
+      const { priceId, successUrl, cancelUrl } = req.body;
+      const user = await User.findById(req.user.id);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Create checkout session for authenticated user
+      const session = await stripeService.createCheckoutSessionForUser(
+        user, 
+        priceId, 
+        successUrl || 'https://myassistanthub.com/success.html',
+        cancelUrl || 'https://myassistanthub.com/#pricing'
+      );
+
+      res.json({
+        sessionId: session.id,
+        url: session.url
+      });
+
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      res.status(500).json({ 
+        error: 'Failed to create checkout session',
+        details: error.message 
       });
     }
-
-    const { priceId, successUrl, cancelUrl } = req.body;
-    const user = await User.findById(req.user.id);
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Create checkout session for authenticated user
-    const session = await stripeService.createCheckoutSessionForUser(
-      user, 
-      priceId, 
-      successUrl || 'https://myassistanthub.com/success.html',
-      cancelUrl || 'https://myassistanthub.com/#pricing'
-    );
-
-    res.json({
-      sessionId: session.id,
-      url: session.url
-    });
-
-  } catch (error) {
-    console.error('Error creating checkout session:', error);
-    res.status(500).json({ 
-      error: 'Failed to create checkout session',
-      details: error.message 
-    });
   }
-});
+);
 
 // Handle Stripe webhooks
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
