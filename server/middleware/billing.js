@@ -49,10 +49,38 @@ const incrementUsage = async (req, res, next) => {
     // Increment usage
     const updatedUser = await user.incrementUsage();
     
+    // Verify the increment actually worked
+    if (!updatedUser) {
+      console.error('[Billing] incrementUsage returned null/undefined');
+      return res.status(500).json({ 
+        error: 'Usage increment failed - no user returned',
+        details: 'incrementUsage method returned null or undefined'
+      });
+    }
+    
+    // Check if usage actually increased
+    const usageBefore = user.subscription.usage.requestsThisMonth;
+    const usageAfter = updatedUser.subscription.usage.requestsThisMonth;
+    
+    console.log('[Billing] Usage before:', usageBefore, 'Usage after:', usageAfter);
+    
+    if (usageAfter <= usageBefore) {
+      console.error('[Billing] Usage did not increment properly');
+      return res.status(500).json({ 
+        error: 'Usage increment failed - usage did not increase',
+        details: {
+          before: usageBefore,
+          after: usageAfter,
+          user: user.email,
+          userId: user._id
+        }
+      });
+    }
+    
     // Update the user object in the request with the updated user
     req.user = updatedUser;
     
-    console.log('[Billing] Usage increment completed');
+    console.log('[Billing] Usage increment completed successfully');
     console.log('[Billing] New usage count:', updatedUser.subscription.usage.requestsThisMonth);
     
     // If next is a function, call it (normal middleware flow)
@@ -67,7 +95,9 @@ const incrementUsage = async (req, res, next) => {
     return res.status(500).json({ 
       error: 'Usage tracking failed', 
       details: error.message,
-      stack: error.stack 
+      stack: error.stack,
+      user: req.user ? req.user.email : 'unknown',
+      userId: req.user ? req.user._id : 'unknown'
     });
   }
 };

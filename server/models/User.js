@@ -305,6 +305,8 @@ userSchema.methods.incrementUsage = async function () {
       };
     }
 
+    console.log("[Usage] Update operation:", JSON.stringify(updateOperation));
+
     // Use findByIdAndUpdate to avoid validation issues
     const result = await this.constructor.findByIdAndUpdate(
       this._id,
@@ -312,14 +314,26 @@ userSchema.methods.incrementUsage = async function () {
       { new: true } // Return the updated document
     );
 
+    if (!result) {
+      console.error("[Usage] findByIdAndUpdate returned null");
+      throw new Error("Database update returned null - user not found");
+    }
+
     console.log(
       "[Usage] Update successful, new usage:",
       result.subscription.usage.requestsThisMonth
     );
+    
+    // Verify the update actually worked
+    if (result.subscription.usage.requestsThisMonth === this.subscription.usage.requestsThisMonth) {
+      console.error("[Usage] Usage count did not change after update");
+      throw new Error("Usage count did not increment - database update may have failed");
+    }
+    
     return result;
   } catch (error) {
     console.error("[Usage] Update failed:", error);
-    throw error;
+    throw new Error(`Usage increment failed: ${error.message}`);
   }
 };
 
