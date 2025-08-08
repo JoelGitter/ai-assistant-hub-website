@@ -49,6 +49,9 @@ const incrementUsage = async (req, res, next) => {
     // Increment usage
     const updatedUser = await user.incrementUsage();
     
+    // Update the user object in the request with the updated user
+    req.user = updatedUser;
+    
     console.log('[Billing] Usage increment completed');
     console.log('[Billing] New usage count:', updatedUser.subscription.usage.requestsThisMonth);
     next();
@@ -122,10 +125,15 @@ const checkFreePlan = async (req, res, next) => {
 // Middleware to get usage statistics
 const getUsageStats = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id);
+    // Use the user from the request (which should be updated by incrementUsage)
+    const user = req.user || await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    console.log('[Billing] Getting usage stats for user:', user.email);
+    console.log('[Billing] Current usage:', user.subscription.usage.requestsThisMonth);
+    console.log('[Billing] Usage limit:', user.subscription.usage.requestsLimit);
 
     // Add usage stats to response
     res.locals.usageStats = {
@@ -138,6 +146,7 @@ const getUsageStats = async (req, res, next) => {
       canMakeRequest: user.canMakeRequest()
     };
 
+    console.log('[Billing] Usage stats calculated:', res.locals.usageStats);
     next();
   } catch (error) {
     console.error('Error getting usage stats:', error);
