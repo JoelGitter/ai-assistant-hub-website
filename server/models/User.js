@@ -1,163 +1,175 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
-const subscriptionSchema = new mongoose.Schema({
-  plan: {
-    type: String,
-    enum: ['free', 'pro'],
-    default: 'free'
-  },
-  status: {
-    type: String,
-    enum: ['active', 'inactive', 'cancelled', 'past_due'],
-    default: 'inactive'
-  },
-  stripeCustomerId: {
-    type: String,
-    sparse: true
-  },
-  stripeSubscriptionId: {
-    type: String,
-    sparse: true
-  },
-  currentPeriodStart: {
-    type: Date
-  },
-  currentPeriodEnd: {
-    type: Date
-  },
-  cancelAtPeriodEnd: {
-    type: Boolean,
-    default: false
-  },
-  usage: {
-    requestsThisMonth: {
-      type: Number,
-      default: 0
-    },
-    requestsLimit: {
-      type: Number,
-      default: 10 // Free tier limit
-    },
-    lastResetDate: {
-      type: Date,
-      default: Date.now
-    }
-  }
-}, { timestamps: true });
-
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  isEmailVerified: {
-    type: Boolean,
-    default: false
-  },
-  emailVerificationToken: {
-    type: String
-  },
-  emailVerificationExpires: {
-    type: Date
-  },
-  passwordResetToken: {
-    type: String
-  },
-  passwordResetExpires: {
-    type: Date
-  },
-  lastLogin: {
-    type: Date
-  },
-  loginAttempts: {
-    type: Number,
-    default: 0
-  },
-  lockUntil: {
-    type: Date
-  },
-  subscription: {
-    type: subscriptionSchema,
-    default: () => ({
-      plan: 'free',
-      status: 'inactive',
-      usage: {
-        requestsThisMonth: 0,
-        requestsLimit: 10,
-        lastResetDate: new Date()
-      }
-    })
-  },
-  preferences: {
-    theme: {
+const subscriptionSchema = new mongoose.Schema(
+  {
+    plan: {
       type: String,
-      enum: ['light', 'dark', 'auto'],
-      default: 'auto'
+      enum: ["free", "pro"],
+      default: "free",
     },
-    notifications: {
-      email: {
-        type: Boolean,
-        default: true
-      },
-      browser: {
-        type: Boolean,
-        default: true
-      }
-    }
-  },
-  apiKeys: [{
-    name: String,
-    key: String,
-    createdAt: {
+    status: {
+      type: String,
+      enum: ["active", "inactive", "cancelled", "past_due"],
+      default: "inactive",
+    },
+    stripeCustomerId: {
+      type: String,
+      sparse: true,
+    },
+    stripeSubscriptionId: {
+      type: String,
+      sparse: true,
+    },
+    currentPeriodStart: {
       type: Date,
-      default: Date.now
     },
-    lastUsed: Date
-  }]
-}, {
-  timestamps: true
-});
+    currentPeriodEnd: {
+      type: Date,
+    },
+    cancelAtPeriodEnd: {
+      type: Boolean,
+      default: false,
+    },
+    usage: {
+      requestsThisMonth: {
+        type: Number,
+        default: 0,
+      },
+      requestsLimit: {
+        type: Number,
+        default: 10, // Free tier limit
+      },
+      lastResetDate: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  },
+  { timestamps: true }
+);
+
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minlength: 6,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerificationToken: {
+      type: String,
+    },
+    emailVerificationExpires: {
+      type: Date,
+    },
+    passwordResetToken: {
+      type: String,
+    },
+    passwordResetExpires: {
+      type: Date,
+    },
+    lastLogin: {
+      type: Date,
+    },
+    loginAttempts: {
+      type: Number,
+      default: 0,
+    },
+    lockUntil: {
+      type: Date,
+    },
+    subscription: {
+      type: subscriptionSchema,
+      default: () => ({
+        plan: "free",
+        status: "inactive",
+        usage: {
+          requestsThisMonth: 0,
+          requestsLimit: 10,
+          lastResetDate: new Date(),
+        },
+      }),
+    },
+    preferences: {
+      theme: {
+        type: String,
+        enum: ["light", "dark", "auto"],
+        default: "auto",
+      },
+      notifications: {
+        email: {
+          type: Boolean,
+          default: true,
+        },
+        browser: {
+          type: Boolean,
+          default: true,
+        },
+      },
+    },
+    apiKeys: [
+      {
+        name: String,
+        key: String,
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+        lastUsed: Date,
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
 // Indexes for performance
 userSchema.index({ email: 1 });
-userSchema.index({ 'subscription.stripeCustomerId': 1 });
-userSchema.index({ 'subscription.stripeSubscriptionId': 1 });
-userSchema.index({ 'subscription.status': 1 });
+userSchema.index({ "subscription.stripeCustomerId": 1 });
+userSchema.index({ "subscription.stripeSubscriptionId": 1 });
+userSchema.index({ "subscription.status": 1 });
 
 // Virtual for checking if account is locked
-userSchema.virtual('isLocked').get(function() {
+userSchema.virtual("isLocked").get(function () {
   return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
 // Virtual for checking subscription status
-userSchema.virtual('hasActiveSubscription').get(function() {
-  return this.subscription.status === 'active' && 
-         this.subscription.currentPeriodEnd > new Date();
+userSchema.virtual("hasActiveSubscription").get(function () {
+  return (
+    this.subscription.status === "active" && this.subscription.plan === "pro"
+  );
 });
 
 // Virtual for checking usage limits
-userSchema.virtual('hasReachedLimit').get(function() {
-  return this.subscription.usage.requestsThisMonth >= this.subscription.usage.requestsLimit;
+userSchema.virtual("hasReachedLimit").get(function () {
+  return (
+    this.subscription.usage.requestsThisMonth >=
+    this.subscription.usage.requestsLimit
+  );
 });
 
 // Pre-save middleware to hash password
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
@@ -168,150 +180,166 @@ userSchema.pre('save', async function(next) {
 });
 
 // Pre-save middleware to ensure subscription structure
-userSchema.pre('save', function(next) {
+userSchema.pre("save", function (next) {
   // Ensure subscription object exists and has proper structure
   if (!this.subscription) {
     this.subscription = {};
   }
-  
+
   if (!this.subscription.usage) {
     this.subscription.usage = {
       requestsThisMonth: 0,
       requestsLimit: 10,
-      lastResetDate: new Date()
+      lastResetDate: new Date(),
     };
   }
-  
+
   // Set defaults if not present
-  if (!this.subscription.plan) this.subscription.plan = 'free';
-  if (!this.subscription.status) this.subscription.status = 'inactive';
-  if (this.subscription.usage.requestsThisMonth === undefined) this.subscription.usage.requestsThisMonth = 0;
-  if (this.subscription.usage.requestsLimit === undefined) this.subscription.usage.requestsLimit = 10;
-  if (!this.subscription.usage.lastResetDate) this.subscription.usage.lastResetDate = new Date();
-  
+  if (!this.subscription.plan) this.subscription.plan = "free";
+  if (!this.subscription.status) this.subscription.status = "inactive";
+  if (this.subscription.usage.requestsThisMonth === undefined)
+    this.subscription.usage.requestsThisMonth = 0;
+  if (this.subscription.usage.requestsLimit === undefined)
+    this.subscription.usage.requestsLimit = 10;
+  if (!this.subscription.usage.lastResetDate)
+    this.subscription.usage.lastResetDate = new Date();
+
   next();
 });
 
 // Method to compare passwords
-userSchema.methods.comparePassword = async function(candidatePassword) {
+userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Method to increment login attempts
-userSchema.methods.incLoginAttempts = function() {
+userSchema.methods.incLoginAttempts = function () {
   // If we have a previous lock that has expired, restart at 1
   if (this.lockUntil && this.lockUntil < Date.now()) {
     return this.updateOne({
       $unset: { lockUntil: 1 },
-      $set: { loginAttempts: 1 }
+      $set: { loginAttempts: 1 },
     });
   }
-  
+
   const updates = { $inc: { loginAttempts: 1 } };
-  
+
   // Lock account after 5 failed attempts
   if (this.loginAttempts + 1 >= 5 && !this.isLocked) {
     updates.$set = { lockUntil: Date.now() + 2 * 60 * 60 * 1000 }; // 2 hours
   }
-  
+
   return this.updateOne(updates);
 };
 
 // Method to reset login attempts
-userSchema.methods.resetLoginAttempts = function() {
+userSchema.methods.resetLoginAttempts = function () {
   return this.updateOne({
     $unset: { loginAttempts: 1, lockUntil: 1 },
-    $set: { lastLogin: Date.now() }
+    $set: { lastLogin: Date.now() },
   });
 };
 
 // Method to check if user can make requests
-userSchema.methods.canMakeRequest = function() {
+userSchema.methods.canMakeRequest = function () {
   // Free users check usage limits
-  if (this.subscription.plan === 'free') {
+  if (this.subscription.plan === "free") {
     return !this.hasReachedLimit;
   }
-  
+
   // Pro users always can make requests if subscription is active
   return this.hasActiveSubscription;
 };
 
 // Method to increment usage
-userSchema.methods.incrementUsage = async function() {
+userSchema.methods.incrementUsage = async function () {
   const now = new Date();
   const lastReset = new Date(this.subscription.usage.lastResetDate);
-  
-  console.log('[Usage] Incrementing usage for user:', this.email);
-  console.log('[Usage] Current usage before:', this.subscription.usage.requestsThisMonth);
-  console.log('[Usage] Current month:', now.getMonth(), now.getFullYear());
-  console.log('[Usage] Last reset month:', lastReset.getMonth(), lastReset.getFullYear());
-  
+
+  console.log("[Usage] Incrementing usage for user:", this.email);
+  console.log(
+    "[Usage] Current usage before:",
+    this.subscription.usage.requestsThisMonth
+  );
+  console.log("[Usage] Current month:", now.getMonth(), now.getFullYear());
+  console.log(
+    "[Usage] Last reset month:",
+    lastReset.getMonth(),
+    lastReset.getFullYear()
+  );
+
   let newUsageCount;
   let newResetDate;
-  
+
   // Reset usage if it's a new month
-  if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
-    console.log('[Usage] New month detected, resetting usage to 1');
+  if (
+    now.getMonth() !== lastReset.getMonth() ||
+    now.getFullYear() !== lastReset.getFullYear()
+  ) {
+    console.log("[Usage] New month detected, resetting usage to 1");
     newUsageCount = 1;
     newResetDate = now;
   } else {
-    console.log('[Usage] Same month, incrementing usage');
+    console.log("[Usage] Same month, incrementing usage");
     newUsageCount = this.subscription.usage.requestsThisMonth + 1;
     newResetDate = this.subscription.usage.lastResetDate;
   }
-  
-  console.log('[Usage] New usage count:', newUsageCount);
-  
+
+  console.log("[Usage] New usage count:", newUsageCount);
+
   try {
     // Use findByIdAndUpdate to avoid validation issues
     const result = await this.constructor.findByIdAndUpdate(
       this._id,
       {
         $set: {
-          'subscription.usage.requestsThisMonth': newUsageCount,
-          'subscription.usage.lastResetDate': newResetDate
-        }
+          "subscription.usage.requestsThisMonth": newUsageCount,
+          "subscription.usage.lastResetDate": newResetDate,
+        },
       },
       { new: true } // Return the updated document
     );
-    
-    console.log('[Usage] Update successful, new usage:', result.subscription.usage.requestsThisMonth);
+
+    console.log(
+      "[Usage] Update successful, new usage:",
+      result.subscription.usage.requestsThisMonth
+    );
     return result;
   } catch (error) {
-    console.error('[Usage] Update failed:', error);
+    console.error("[Usage] Update failed:", error);
     throw error;
   }
 };
 
 // Method to update subscription
-userSchema.methods.updateSubscription = async function(subscriptionData) {
+userSchema.methods.updateSubscription = async function (subscriptionData) {
   try {
     // Use findByIdAndUpdate to avoid validation issues
     const result = await this.constructor.findByIdAndUpdate(
       this._id,
       {
         $set: {
-          'subscription': {
+          subscription: {
             ...this.subscription.toObject(),
-            ...subscriptionData
-          }
-        }
+            ...subscriptionData,
+          },
+        },
       },
       { new: true } // Return the updated document
     );
-    
+
     // Update the current instance
     Object.assign(this.subscription, subscriptionData);
-    
+
     return result;
   } catch (error) {
-    console.error('[Subscription] Update failed:', error);
+    console.error("[Subscription] Update failed:", error);
     throw error;
   }
 };
 
 // Method to get user for API responses (excludes sensitive data)
-userSchema.methods.toSafeObject = function() {
+userSchema.methods.toSafeObject = function () {
   const user = this.toObject();
   delete user.password;
   delete user.emailVerificationToken;
@@ -322,4 +350,4 @@ userSchema.methods.toSafeObject = function() {
   return user;
 };
 
-module.exports = mongoose.model('User', userSchema); 
+module.exports = mongoose.model("User", userSchema);
