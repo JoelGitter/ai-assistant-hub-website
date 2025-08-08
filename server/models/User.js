@@ -288,15 +288,27 @@ userSchema.methods.incrementUsage = async function () {
   console.log("[Usage] New usage count:", newUsageCount);
 
   try {
+    let updateOperation;
+    
+    if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
+      // New month - reset to 1
+      updateOperation = {
+        $set: {
+          "subscription.usage.requestsThisMonth": 1,
+          "subscription.usage.lastResetDate": now,
+        },
+      };
+    } else {
+      // Same month - increment by 1
+      updateOperation = {
+        $inc: { "subscription.usage.requestsThisMonth": 1 },
+      };
+    }
+
     // Use findByIdAndUpdate to avoid validation issues
     const result = await this.constructor.findByIdAndUpdate(
       this._id,
-      {
-        $set: {
-          "subscription.usage.requestsThisMonth": newUsageCount,
-          "subscription.usage.lastResetDate": newResetDate,
-        },
-      },
+      updateOperation,
       { new: true } // Return the updated document
     );
 

@@ -54,7 +54,13 @@ const incrementUsage = async (req, res, next) => {
     
     console.log('[Billing] Usage increment completed');
     console.log('[Billing] New usage count:', updatedUser.subscription.usage.requestsThisMonth);
-    next();
+    
+    // If next is a function, call it (normal middleware flow)
+    if (typeof next === 'function') {
+      next();
+    }
+    // If next is not a function, we're being called manually
+    // The calling code should handle the response
   } catch (error) {
     console.error('[Billing] Error incrementing usage:', error);
     // Fail the request if usage tracking fails
