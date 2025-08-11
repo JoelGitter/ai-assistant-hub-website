@@ -138,14 +138,27 @@ router.post(
 4. Please add your OpenAI API key for actual summarization.`;
       }
 
+      // Increment usage after successful request
+      try {
+        console.log('🚨🚨🚨 CALLING INCREMENT USAGE IN SUMMARIZE ROUTE! 🚨🚨🚨');
+        await incrementUsage(req, res);
+        console.log('🚨🚨🚨 INCREMENT USAGE COMPLETED IN SUMMARIZE ROUTE! 🚨🚨🚨');
+      } catch (error) {
+        console.error("Error incrementing usage:", error);
+        return res.status(500).json({ 
+          error: "Usage tracking failed", 
+          details: error.message 
+        });
+      }
+
       // Get updated usage stats AFTER incrementing
       try {
-        await getUsageStats(req, res, () => {});
+        await getUsageStats(req, res);
       } catch (error) {
         console.error("Error getting usage stats:", error);
-        return res.status(500).json({
-          error: "Failed to get usage statistics",
-          details: error.message
+        return res.status(500).json({ 
+          error: "Failed to get usage statistics", 
+          details: error.message 
         });
       }
 
@@ -212,7 +225,7 @@ router.post(
 
       // Increment usage after successful request
       try {
-        await incrementUsage(req, res, () => {});
+        await incrementUsage(req, res);
       } catch (error) {
         console.error("Error incrementing usage:", error);
         return res.status(500).json({ 
@@ -223,7 +236,7 @@ router.post(
 
       // Get updated usage stats AFTER incrementing
       try {
-        await getUsageStats(req, res, () => {});
+        await getUsageStats(req, res);
       } catch (error) {
         console.error("Error getting usage stats:", error);
         return res.status(500).json({ 
@@ -335,7 +348,7 @@ router.post(
 
       // Increment usage after successful request (before sending response)
       try {
-        await incrementUsage(req, res, () => {});
+        await incrementUsage(req, res);
       } catch (error) {
         console.error("Error incrementing usage:", error);
         return res.status(500).json({ 
@@ -346,7 +359,7 @@ router.post(
 
       // Get updated usage stats AFTER incrementing
       try {
-        await getUsageStats(req, res, () => {});
+        await getUsageStats(req, res);
       } catch (error) {
         console.error("Error getting usage stats:", error);
         return res.status(500).json({ 
@@ -433,7 +446,7 @@ router.post(
 
       // Increment usage after successful request
       try {
-        await incrementUsage(req, res, () => {});
+        await incrementUsage(req, res);
       } catch (error) {
         console.error("Error incrementing usage:", error);
         return res.status(500).json({ 
@@ -525,7 +538,7 @@ router.post(
 
       // Increment usage after successful request
       try {
-        await incrementUsage(req, res, () => {});
+        await incrementUsage(req, res);
       } catch (error) {
         console.error("Error incrementing usage:", error);
         return res.status(500).json({ 
@@ -686,7 +699,7 @@ Please respond to the user at: ${email}
 
       // Get updated usage stats
       try {
-        await getUsageStats(req, res, () => {});
+        await getUsageStats(req, res);
       } catch (error) {
         console.error("Error getting usage stats:", error);
         return res.status(500).json({
