@@ -35,6 +35,10 @@ const checkSubscriptionAccess = async (req, res, next) => {
 
 // Middleware to increment usage after successful request
 const incrementUsage = async (req, res, next) => {
+  console.log('🚨🚨🚨 INCREMENT USAGE MIDDLEWARE CALLED! 🚨🚨🚨');
+  console.log('🚨🚨🚨 INCREMENT USAGE MIDDLEWARE CALLED! 🚨🚨🚨');
+  console.log('🚨🚨🚨 INCREMENT USAGE MIDDLEWARE CALLED! 🚨🚨🚨');
+  
   try {
     console.log('[Billing] Incrementing usage for request');
     const user = await User.findById(req.user.id);
@@ -183,10 +187,23 @@ const getUsageStats = async (req, res, next) => {
     };
 
     console.log('[Billing] Usage stats calculated:', res.locals.usageStats);
-    next();
+    
+    // If next is a function, call it (normal middleware flow)
+    if (typeof next === 'function') {
+      next();
+    }
+    // If next is not a function, we're being called manually
+    // The calling code should handle the response
   } catch (error) {
     console.error('Error getting usage stats:', error);
-    res.status(500).json({ error: 'Failed to get usage statistics' });
+    // Fail the request if getting usage stats fails
+    return res.status(500).json({ 
+      error: 'Failed to get usage statistics',
+      details: error.message,
+      stack: error.stack,
+      user: req.user ? req.user.email : 'unknown',
+      userId: req.user ? req.user._id : 'unknown'
+    });
   }
 };
 
