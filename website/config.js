@@ -6,7 +6,7 @@ const config = {
     stripe: {
         publishableKey: 'pk_test_your_test_key_here',
         priceIds: {
-            proMonthly: 'price_1RqwlBI5JHWOZqzkNDhcorZk'
+            proMonthly: 'price_1RpKAYI5JHWOZqzklUS9vUna'
         }
     },
     
@@ -34,4 +34,3 @@ if (typeof module !== 'undefined' && module.exports) {
 } else {
     window.config = config;
 }
-// Cache bust: Sat Aug  2 21:44:58 CDT 2025

@@ -34,7 +34,7 @@ const configs = {
         stripe: {
             publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_your_test_key_here',
             priceIds: {
-                proMonthly: 'price_1RqwlBI5JHWOZqzkNDhcorZk'
+                proMonthly: 'price_1RpKAYI5JHWOZqzklUS9vUna'
             }
         },
         analytics: {
