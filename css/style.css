@@ -228,6 +228,7 @@ p {
 
 /* Hero Section */
 .hero {
+    margin-top: 50px;
     padding: var(--spacing-3xl) 0;
     background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     position: relative;
