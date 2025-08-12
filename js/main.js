@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initContactForm();
     initMobileMenu();
     initLazyLoading();
+    initVideoPopup(); // Add video popup initialization
 });
 
 // Navigation functionality
@@ -800,6 +801,35 @@ const utils = {
 window.utils = utils;
 
 // Video Popup Functions
+function initVideoPopup() {
+    const watchDemoBtn = document.getElementById('watch-demo-btn');
+    
+    if (watchDemoBtn) {
+        watchDemoBtn.addEventListener('click', openVideoPopup);
+    }
+    
+    const videoPopup = document.getElementById('video-popup');
+    
+    if (videoPopup) {
+        // Close video popup when clicking outside the video
+        videoPopup.addEventListener('click', function(e) {
+            if (e.target === videoPopup) {
+                closeVideoPopup();
+            }
+        });
+    }
+    
+    // Close video popup with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const videoPopup = document.getElementById('video-popup');
+            if (videoPopup && videoPopup.classList.contains('active')) {
+                closeVideoPopup();
+            }
+        }
+    });
+}
+
 function openVideoPopup() {
     const videoPopup = document.getElementById('video-popup');
     const videoIframe = document.getElementById('video-iframe');
@@ -850,31 +880,4 @@ function closeVideoPopup() {
             event_label: 'demo_video'
         });
     }
-}
-
-// Close video popup when clicking outside the video
-document.addEventListener('DOMContentLoaded', function() {
-    const videoPopup = document.getElementById('video-popup');
-    
-    if (videoPopup) {
-        videoPopup.addEventListener('click', function(e) {
-            if (e.target === videoPopup) {
-                closeVideoPopup();
-            }
-        });
-    }
-    
-    // Close video popup with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const videoPopup = document.getElementById('video-popup');
-            if (videoPopup && videoPopup.classList.contains('active')) {
-                closeVideoPopup();
-            }
-        }
-    });
-});
-
-// Make functions globally available
-window.openVideoPopup = openVideoPopup;
-window.closeVideoPopup = closeVideoPopup; 
+} 
