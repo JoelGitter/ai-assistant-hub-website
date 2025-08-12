@@ -236,10 +236,10 @@ p {
 
 .hero-container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1.2fr; /* Give more space to video side */
     gap: var(--spacing-3xl);
     align-items: center;
-    max-width: 1200px;
+    max-width: 1400px; /* Increased from 1200px */
     margin: 0 auto;
     padding: 0 var(--spacing-lg);
 }
@@ -285,7 +285,7 @@ p {
 /* Hero Video Container */
 .hero-video-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 700px; /* Increased from 500px */
     position: relative;
 }
 
@@ -297,6 +297,7 @@ p {
     box-shadow: var(--shadow-xl);
     background: #000;
     aspect-ratio: 16/9;
+    min-height: 400px; /* Added minimum height */
 }
 
 .video-box iframe {
@@ -1095,6 +1096,11 @@ p {
     
     .hero-video-container {
         max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    .video-box {
+        min-height: 300px; /* Smaller minimum height on mobile */
     }
     
     .video-info h3 {
