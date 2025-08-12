@@ -174,13 +174,46 @@ function initContactForm() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
             submitBtn.disabled = true;
             
-            // Simulate form submission (replace with actual API call)
-            setTimeout(() => {
-                showNotification('Thank you! Your message has been sent successfully.', 'success');
-                this.reset();
+            // Send message to server support endpoint
+            fetch('https://ai-assistant-hub-app.azurewebsites.net/api/ai/support', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: data.name,
+                    email: data.email,
+                    subject: data.subject || 'Website Contact Form',
+                    message: data.message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Thank you! Your message has been sent successfully.', 'success');
+                    contactForm.reset();
+                    
+                    // Track form submission
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'form_submit', {
+                            event_category: 'engagement',
+                            event_label: 'contact_form',
+                            value: 1
+                        });
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to send message');
+                }
+            })
+            .catch(error => {
+                console.error('Support endpoint error:', error);
+                showNotification('Sorry, there was an error sending your message. Please try again or email us directly at support@myassistanthub.com', 'error');
+            })
+            .finally(() => {
+                // Reset button state
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
-            }, 2000);
+            });
         });
     }
 }
