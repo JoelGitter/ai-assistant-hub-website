@@ -693,7 +693,7 @@ function triggerStripeCheckout() {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
-                priceId: 'price_1RqwlBI5JHWOZqzkNDhcorZk',
+                priceId: 'price_1RpKAYI5JHWOZqzklUS9vUna',
                 successUrl: 'https://myassistanthub.com/success.html',
                 cancelUrl: 'https://myassistanthub.com/#pricing'
             })
