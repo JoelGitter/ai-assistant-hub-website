@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initMobileMenu();
     initLazyLoading();
     initVideoPopup(); // Add video popup initialization
+    initHeroVideo(); // Add hero video initialization
 });
 
 // Navigation functionality
@@ -801,6 +802,40 @@ const utils = {
 window.utils = utils;
 
 // Video Popup Functions
+function initHeroVideo() {
+    const heroVideo = document.getElementById('hero-video');
+    const videoBox = document.querySelector('.video-box');
+    
+    if (heroVideo && videoBox) {
+        // Add click to expand functionality
+        videoBox.addEventListener('click', function() {
+            openVideoPopup();
+        });
+        
+        // Add hover effects
+        videoBox.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.02)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+        
+        videoBox.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+        
+        // Add cursor pointer to indicate it's clickable
+        videoBox.style.cursor = 'pointer';
+        
+        // Track video view
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'video_view', {
+                event_category: 'engagement',
+                event_label: 'hero_video',
+                video_id: 'Yzy8v77TLxE'
+            });
+        }
+    }
+}
+
 function initVideoPopup() {
     const watchDemoBtn = document.getElementById('watch-demo-btn');
     
@@ -839,9 +874,9 @@ function openVideoPopup() {
         return;
     }
     
-    // Set the YouTube video URL with autoplay
+    // Set the YouTube video URL with autoplay (same as hero video)
     const videoId = 'Yzy8v77TLxE';
-    videoIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    videoIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=1`;
     
     // Show the popup
     videoPopup.classList.add('active');
@@ -851,7 +886,7 @@ function openVideoPopup() {
     if (typeof gtag !== 'undefined') {
         gtag('event', 'video_play', {
             event_category: 'engagement',
-            event_label: 'demo_video',
+            event_label: 'demo_video_popup',
             video_id: videoId
         });
     }
