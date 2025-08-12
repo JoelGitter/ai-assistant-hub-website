@@ -90,12 +90,12 @@
                     Powered by advanced AI to make your web browsing faster and more efficient.
                 </p>
                 <div class="hero-buttons">
-                    <a href="https://chrome.google.com/webstore/detail/ai-assistant-hub" class="btn btn-primary" target="_blank">
+                    <a href="https://chromewebstore.google.com/detail/ai-assistant-hub/dcenfkcfcmljjndojcllfhloicfdodhl" class="btn btn-primary" target="_blank">
                         <i class="fab fa-chrome"></i> Install for Chrome
                     </a>
-                    <a href="https://www.youtube.com/watch?v=Yzy8v77TLxE" class="btn btn-secondary">
+                    <button class="btn btn-secondary" onclick="openVideoPopup()">
                         <i class="fas fa-play"></i> Watch Demo
-                    </a>
+                    </button>
                 </div>
                 <!-- <div class="hero-stats">
                     <div class="stat">
@@ -488,6 +488,23 @@
             </div>
         </div>
     </footer>
+
+    <!-- Video Popup Modal -->
+    <div id="video-popup" class="video-popup">
+        <div class="video-popup-content">
+            <button class="video-popup-close" onclick="closeVideoPopup()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="video-container">
+                <iframe id="video-iframe" 
+                        src="" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
 
     <!-- JavaScript -->
     <script src="js/main.js?v=2.4.0"></script>

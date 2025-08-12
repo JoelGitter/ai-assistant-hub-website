@@ -797,4 +797,84 @@ const utils = {
 };
 
 // Export utils for use in other scripts
-window.utils = utils; 
+window.utils = utils;
+
+// Video Popup Functions
+function openVideoPopup() {
+    const videoPopup = document.getElementById('video-popup');
+    const videoIframe = document.getElementById('video-iframe');
+    
+    if (!videoPopup || !videoIframe) {
+        console.error('Video popup elements not found');
+        return;
+    }
+    
+    // Set the YouTube video URL with autoplay
+    const videoId = 'Yzy8v77TLxE';
+    videoIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+    
+    // Show the popup
+    videoPopup.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    
+    // Track video play event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'video_play', {
+            event_category: 'engagement',
+            event_label: 'demo_video',
+            video_id: videoId
+        });
+    }
+}
+
+function closeVideoPopup() {
+    const videoPopup = document.getElementById('video-popup');
+    const videoIframe = document.getElementById('video-iframe');
+    
+    if (!videoPopup || !videoIframe) {
+        console.error('Video popup elements not found');
+        return;
+    }
+    
+    // Hide the popup
+    videoPopup.classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+    
+    // Clear the iframe src to stop the video
+    videoIframe.src = '';
+    
+    // Track video close event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'video_close', {
+            event_category: 'engagement',
+            event_label: 'demo_video'
+        });
+    }
+}
+
+// Close video popup when clicking outside the video
+document.addEventListener('DOMContentLoaded', function() {
+    const videoPopup = document.getElementById('video-popup');
+    
+    if (videoPopup) {
+        videoPopup.addEventListener('click', function(e) {
+            if (e.target === videoPopup) {
+                closeVideoPopup();
+            }
+        });
+    }
+    
+    // Close video popup with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const videoPopup = document.getElementById('video-popup');
+            if (videoPopup && videoPopup.classList.contains('active')) {
+                closeVideoPopup();
+            }
+        }
+    });
+});
+
+// Make functions globally available
+window.openVideoPopup = openVideoPopup;
+window.closeVideoPopup = closeVideoPopup; 
