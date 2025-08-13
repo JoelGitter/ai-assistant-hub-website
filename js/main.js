@@ -441,56 +441,328 @@ function showLoginModal() {
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Login to Upgrade</h2>
-                <button class="modal-close">&times;</button>
+                <div class="modal-logo">
+                    <img src="images/logo.svg" alt="AI Assistant Hub" class="logo">
+                    <span class="logo-text">AI Assistant Hub</span>
+                </div>
+                <h2>Welcome Back</h2>
+                <p class="modal-subtitle">Sign in to upgrade your account</p>
+                <button class="modal-close" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <form id="login-form">
                     <div class="form-group">
-                        <label for="login-email">Email</label>
-                        <input type="email" id="login-email" name="email" required>
+                        <label for="login-email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="login-email" name="email" placeholder="Enter your email" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="login-password">Password</label>
-                        <input type="password" id="login-password" name="password" required>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <div class="form-options">
+                        <label class="checkbox-wrapper">
+                            <input type="checkbox" id="remember-me">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
                 </form>
                 <div class="modal-footer">
-                    <p>Don't have an account? <a href="#" id="show-register">Register</a></p>
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    <p class="footer-text">
+                        Don't have an account? 
+                        <a href="#" id="show-register" class="link-primary">Create one now</a>
+                    </p>
                 </div>
             </div>
         </div>
     `;
     
-    // Add styles
+    // Add enhanced styles
     modal.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 10000;
+        padding: 20px;
+        animation: modalFadeIn 0.3s ease-out;
     `;
     
     const modalContent = modal.querySelector('.modal-content');
     modalContent.style.cssText = `
         background: white;
-        padding: 2rem;
-        border-radius: 0.5rem;
-        max-width: 400px;
-        width: 90%;
+        border-radius: 16px;
+        max-width: 450px;
+        width: 100%;
         position: relative;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        animation: modalSlideIn 0.3s ease-out;
+    `;
+    
+    // Add header styles
+    const modalHeader = modal.querySelector('.modal-header');
+    modalHeader.style.cssText = `
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        padding: 2rem 2rem 1.5rem;
+        text-align: center;
+        position: relative;
+    `;
+    
+    // Add logo styles
+    const modalLogo = modal.querySelector('.modal-logo');
+    modalLogo.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 1rem;
+    `;
+    
+    const logoImg = modal.querySelector('.modal-logo .logo');
+    logoImg.style.cssText = `
+        width: 32px;
+        height: 32px;
+        filter: brightness(0) invert(1);
+    `;
+    
+    const logoText = modal.querySelector('.modal-logo .logo-text');
+    logoText.style.cssText = `
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: white;
+    `;
+    
+    // Add title styles
+    const modalTitle = modal.querySelector('.modal-header h2');
+    modalTitle.style.cssText = `
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: white;
+    `;
+    
+    const modalSubtitle = modal.querySelector('.modal-subtitle');
+    modalSubtitle.style.cssText = `
+        font-size: 1rem;
+        opacity: 0.9;
+        margin: 0;
+        font-weight: 400;
+    `;
+    
+    // Add close button styles
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.style.cssText = `
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+    `;
+    
+    // Add body styles
+    const modalBody = modal.querySelector('.modal-body');
+    modalBody.style.cssText = `
+        padding: 2rem;
+    `;
+    
+    // Add form group styles
+    const formGroups = modal.querySelectorAll('.form-group');
+    formGroups.forEach(group => {
+        group.style.cssText = `
+            margin-bottom: 1.5rem;
+        `;
+    });
+    
+    // Add label styles
+    const labels = modal.querySelectorAll('label');
+    labels.forEach(label => {
+        label.style.cssText = `
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        `;
+    });
+    
+    // Add input wrapper styles
+    const inputWrappers = modal.querySelectorAll('.input-wrapper');
+    inputWrappers.forEach(wrapper => {
+        wrapper.style.cssText = `
+            position: relative;
+            display: flex;
+            align-items: center;
+        `;
+    });
+    
+    // Add input icon styles
+    const inputIcons = modal.querySelectorAll('.input-icon');
+    inputIcons.forEach(icon => {
+        icon.style.cssText = `
+            position: absolute;
+            left: 12px;
+            color: #9ca3af;
+            font-size: 1rem;
+            z-index: 1;
+        `;
+    });
+    
+    // Add input styles
+    const inputs = modal.querySelectorAll('input[type="email"], input[type="password"], input[type="text"]');
+    inputs.forEach(input => {
+        input.style.cssText = `
+            width: 100%;
+            padding: 12px 12px 12px 44px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        `;
+        
+        // Add focus styles
+        input.addEventListener('focus', function() {
+            this.style.borderColor = '#6366f1';
+            this.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.1)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.borderColor = '#e5e7eb';
+            this.style.boxShadow = 'none';
+        });
+    });
+    
+    // Add form options styles
+    const formOptions = modal.querySelector('.form-options');
+    formOptions.style.cssText = `
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+    `;
+    
+    // Add checkbox styles
+    const checkboxWrapper = modal.querySelector('.checkbox-wrapper');
+    checkboxWrapper.style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        color: #6b7280;
+    `;
+    
+    const checkbox = modal.querySelector('#remember-me');
+    checkbox.style.cssText = `
+        width: 16px;
+        height: 16px;
+        accent-color: #6366f1;
+    `;
+    
+    // Add forgot password styles
+    const forgotPassword = modal.querySelector('.forgot-password');
+    forgotPassword.style.cssText = `
+        color: #6366f1;
+        text-decoration: none;
+        font-weight: 500;
+    `;
+    
+    // Add button styles
+    const submitBtn = modal.querySelector('.btn');
+    submitBtn.style.cssText = `
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    `;
+    
+    // Add footer styles
+    const modalFooter = modal.querySelector('.modal-footer');
+    modalFooter.style.cssText = `
+        margin-top: 2rem;
+        text-align: center;
+    `;
+    
+    // Add divider styles
+    const divider = modal.querySelector('.divider');
+    divider.style.cssText = `
+        position: relative;
+        text-align: center;
+        margin: 1.5rem 0;
+        color: #9ca3af;
+        font-size: 0.875rem;
+    `;
+    
+    divider.innerHTML = `
+        <span style="background: white; padding: 0 1rem; position: relative; z-index: 1;">
+            or
+        </span>
+        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #e5e7eb; z-index: 0;"></div>
+    `;
+    
+    // Add footer text styles
+    const footerText = modal.querySelector('.footer-text');
+    footerText.style.cssText = `
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin: 0;
+    `;
+    
+    const linkPrimary = modal.querySelector('.link-primary');
+    linkPrimary.style.cssText = `
+        color: #6366f1;
+        text-decoration: none;
+        font-weight: 600;
     `;
     
     document.body.appendChild(modal);
     
     // Close modal functionality
-    const closeBtn = modal.querySelector('.modal-close');
     closeBtn.addEventListener('click', () => modal.remove());
     
     // Close on outside click
@@ -560,60 +832,272 @@ function showRegisterModal() {
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
+                <div class="modal-logo">
+                    <img src="images/logo.svg" alt="AI Assistant Hub" class="logo">
+                    <span class="logo-text">AI Assistant Hub</span>
+                </div>
                 <h2>Create Account</h2>
-                <button class="modal-close">&times;</button>
+                <p class="modal-subtitle">Join our community to unlock more features</p>
+                <button class="modal-close" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
                 <form id="register-form">
                     <div class="form-group">
                         <label for="register-name">Name</label>
-                        <input type="text" id="register-name" name="name" required>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="register-name" name="name" placeholder="Enter your name" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="register-email">Email</label>
-                        <input type="email" id="register-email" name="email" required>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="register-email" name="email" placeholder="Enter your email" required>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="register-password">Password</label>
-                        <input type="password" id="register-password" name="password" required minlength="6">
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="register-password" name="password" placeholder="Create a password" required minlength="6">
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
                 </form>
                 <div class="modal-footer">
-                    <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+                    <p class="footer-text">
+                        Already have an account? 
+                        <a href="#" id="show-login" class="link-primary">Login here</a>
+                    </p>
                 </div>
             </div>
         </div>
     `;
     
-    // Add styles
+    // Add enhanced styles
     modal.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 10000;
+        padding: 20px;
+        animation: modalFadeIn 0.3s ease-out;
     `;
     
     const modalContent = modal.querySelector('.modal-content');
     modalContent.style.cssText = `
         background: white;
-        padding: 2rem;
-        border-radius: 0.5rem;
-        max-width: 400px;
-        width: 90%;
+        border-radius: 16px;
+        max-width: 450px;
+        width: 100%;
         position: relative;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+        animation: modalSlideIn 0.3s ease-out;
+    `;
+    
+    // Add header styles
+    const modalHeader = modal.querySelector('.modal-header');
+    modalHeader.style.cssText = `
+        background: linear-gradient(135deg, #4f46e5, #8b5cf6);
+        color: white;
+        padding: 2rem 2rem 1.5rem;
+        text-align: center;
+        position: relative;
+    `;
+    
+    // Add logo styles
+    const modalLogo = modal.querySelector('.modal-logo');
+    modalLogo.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 1rem;
+    `;
+    
+    const logoImg = modal.querySelector('.modal-logo .logo');
+    logoImg.style.cssText = `
+        width: 32px;
+        height: 32px;
+        filter: brightness(0) invert(1);
+    `;
+    
+    const logoText = modal.querySelector('.modal-logo .logo-text');
+    logoText.style.cssText = `
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: white;
+    `;
+    
+    // Add title styles
+    const modalTitle = modal.querySelector('.modal-header h2');
+    modalTitle.style.cssText = `
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: white;
+    `;
+    
+    const modalSubtitle = modal.querySelector('.modal-subtitle');
+    modalSubtitle.style.cssText = `
+        font-size: 1rem;
+        opacity: 0.9;
+        margin: 0;
+        font-weight: 400;
+    `;
+    
+    // Add close button styles
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.style.cssText = `
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+    `;
+    
+    // Add body styles
+    const modalBody = modal.querySelector('.modal-body');
+    modalBody.style.cssText = `
+        padding: 2rem;
+    `;
+    
+    // Add form group styles
+    const formGroups = modal.querySelectorAll('.form-group');
+    formGroups.forEach(group => {
+        group.style.cssText = `
+            margin-bottom: 1.5rem;
+        `;
+    });
+    
+    // Add label styles
+    const labels = modal.querySelectorAll('label');
+    labels.forEach(label => {
+        label.style.cssText = `
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        `;
+    });
+    
+    // Add input wrapper styles
+    const inputWrappers = modal.querySelectorAll('.input-wrapper');
+    inputWrappers.forEach(wrapper => {
+        wrapper.style.cssText = `
+            position: relative;
+            display: flex;
+            align-items: center;
+        `;
+    });
+    
+    // Add input icon styles
+    const inputIcons = modal.querySelectorAll('.input-icon');
+    inputIcons.forEach(icon => {
+        icon.style.cssText = `
+            position: absolute;
+            left: 12px;
+            color: #9ca3af;
+            font-size: 1rem;
+            z-index: 1;
+        `;
+    });
+    
+    // Add input styles
+    const inputs = modal.querySelectorAll('input[type="email"], input[type="password"], input[type="text"]');
+    inputs.forEach(input => {
+        input.style.cssText = `
+            width: 100%;
+            padding: 12px 12px 12px 44px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        `;
+        
+        // Add focus styles
+        input.addEventListener('focus', function() {
+            this.style.borderColor = '#6366f1';
+            this.style.boxShadow = '0 0 0 3px rgba(99, 102, 241, 0.1)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.borderColor = '#e5e7eb';
+            this.style.boxShadow = 'none';
+        });
+    });
+    
+    // Add button styles
+    const submitBtn = modal.querySelector('.btn');
+    submitBtn.style.cssText = `
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    `;
+    
+    // Add footer styles
+    const modalFooter = modal.querySelector('.modal-footer');
+    modalFooter.style.cssText = `
+        margin-top: 2rem;
+        text-align: center;
+    `;
+    
+    // Add footer text styles
+    const footerText = modal.querySelector('.footer-text');
+    footerText.style.cssText = `
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin: 0;
+    `;
+    
+    const linkPrimary = modal.querySelector('.link-primary');
+    linkPrimary.style.cssText = `
+        color: #6366f1;
+        text-decoration: none;
+        font-weight: 600;
     `;
     
     document.body.appendChild(modal);
     
     // Close modal functionality
-    const closeBtn = modal.querySelector('.modal-close');
     closeBtn.addEventListener('click', () => modal.remove());
     
     // Close on outside click
