@@ -1392,7 +1392,7 @@ function openVideoPopup() {
     }
     
     // Set the YouTube video URL with autoplay (same as hero video)
-    const videoId = 'Yzy8v77TLxE';
+    const videoId = 'UlkU6Ihz94Y';
     videoIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&controls=1`;
     
     // Show the popup
