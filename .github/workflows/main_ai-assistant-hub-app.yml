@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - ai-assistant-hub-app
+name: Build and deploy Website to Azure Web App - ai-assistant-hub-app
 
 on:
   push:
@@ -22,46 +22,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
-
-      - name: npm install, build, and test
+      - name: Create website deployment package
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
-
-      - name: Create deployment package
-        run: |
-          # Create a clean deployment directory with only necessary files
+          # Create a clean deployment directory with only website files
           mkdir -p deploy-package
           
-          # Copy website files for static hosting
-          cp -r website/ deploy-package/
-          
-          # Copy server files for backend functionality
-          cp -r server/ deploy-package/
-          
-          # Copy package files
-          cp -r package*.json deploy-package/ 2>/dev/null || true
-          cp -r .env* deploy-package/ 2>/dev/null || true
+          # Copy only website files for static hosting
+          cp -r website/* deploy-package/
           
           # Remove unnecessary files to reduce size
-          find deploy-package -name "node_modules" -type d -exec rm -rf {} + 2>/dev/null || true
-          find deploy-package -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true
           find deploy-package -name ".DS_Store" -type f -delete 2>/dev/null || true
           find deploy-package -name "*.log" -type f -delete 2>/dev/null || true
           find deploy-package -name "*.zip" -type f -delete 2>/dev/null || true
           
-          echo "Deployment package created successfully"
+          echo "Website deployment package created successfully"
           du -sh deploy-package/
+          echo "Contents:"
+          ls -la deploy-package/
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
+          name: website-app
           path: deploy-package/
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
           if-no-files-found: error
@@ -77,7 +59,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: website-app
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -86,7 +68,7 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_C079B312C21F4F37A113AC41E1E1342C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_67DD3F6FD8B94A69A54365A530866644 }}
 
-      - name: 'Deploy to Azure Web App'
+      - name: 'Deploy Website to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
