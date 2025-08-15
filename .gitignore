@@ -169,3 +169,6 @@ coverage/
 
 # Deployment artifacts
 deploy-package/
+
+# Chrome extension repository (has its own git repo)
+chrome-extension-repo/

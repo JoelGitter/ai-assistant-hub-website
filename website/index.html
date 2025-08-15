@@ -12,21 +12,21 @@
     <meta property="og:url" content="https://myassistanthub.com/">
     <meta property="og:title" content="AI Assistant Hub - Smart Form Filling & Page Summarization">
     <meta property="og:description" content="Transform your browsing experience with AI-powered form filling and page summarization.">
-    <meta property="og:image" content="https://myassistanthub.com/images/logo-large.svg">
+    <meta property="og:image" content="https://myassistanthub.com/images/og-image.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://myassistanthub.com/">
     <meta property="twitter:title" content="AI Assistant Hub - Smart Form Filling & Page Summarization">
     <meta property="twitter:description" content="Transform your browsing experience with AI-powered form filling and page summarization.">
-    <meta property="twitter:image" content="https://myassistanthub.com/images/logo-large.svg">
+    <meta property="twitter:image" content="https://myassistanthub.com/images/og-image.png">
 
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%236366f1' rx='4'/></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%236366f1;stop-opacity:1'/><stop offset='100%25' style='stop-color:%238b5cf6;stop-opacity:1'/></linearGradient></defs><circle cx='16' cy='16' r='15' fill='url(%23bg)' stroke='%234f46e5' stroke-width='2'/><circle cx='16' cy='16' r='4' fill='white'/><circle cx='16' cy='8' r='2' fill='white'/><circle cx='16' cy='24' r='2' fill='white'/><circle cx='8' cy='16' r='2' fill='white'/><circle cx='24' cy='16' r='2' fill='white'/><path d='M16 12 L16 8 M16 20 L16 24 M12 16 L8 16 M20 16 L24 16' stroke='white' stroke-width='1.5' stroke-linecap='round'/></svg>">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/style.css?v=1.0.4">
+    <link rel="stylesheet" href="css/responsive.css?v=1.0.4">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +49,7 @@
     <script src="https://js.stripe.com/v3/"></script>
     
     <!-- Configuration -->
-            <script src="config-new.js?v=3"></script>
+    <script src="config-live.js?v=4"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -64,8 +64,9 @@
                 <a href="#pricing" class="nav-link">Pricing</a>
                 <a href="#how-it-works" class="nav-link">How It Works</a>
                 <a href="#faq" class="nav-link">FAQ</a>
+                <a href="blog/" class="nav-link">Blog</a>
                 <a href="#contact" class="nav-link">Contact</a>
-                <a href="https://chrome.google.com/webstore/detail/ai-assistant-hub" class="nav-link cta-button" target="_blank">
+                <a href="https://chromewebstore.google.com/detail/ai-assistant-hub/dcenfkcfcmljjndojcllfhloicfdodhl?hl=en-US&utm_source=ext_sidebar" class="nav-link cta-button" target="_blank">
                     <i class="fab fa-chrome"></i> Install Extension
                 </a>
             </div>
@@ -90,14 +91,14 @@
                     Powered by advanced AI to make your web browsing faster and more efficient.
                 </p>
                 <div class="hero-buttons">
-                    <a href="https://chrome.google.com/webstore/detail/ai-assistant-hub" class="btn btn-primary" target="_blank">
+                    <a href="https://chromewebstore.google.com/detail/ai-assistant-hub/dcenfkcfcmljjndojcllfhloicfdodhl" class="btn btn-primary" target="_blank">
                         <i class="fab fa-chrome"></i> Install for Chrome
                     </a>
-                    <button id="demo-btn" class="btn btn-secondary">
+                    <button class="btn btn-secondary" id="watch-demo-btn">
                         <i class="fas fa-play"></i> Watch Demo
                     </button>
                 </div>
-                <div class="hero-stats">
+                <!-- <div class="hero-stats">
                     <div class="stat">
                         <span class="stat-number">10,000+</span>
                         <span class="stat-label">Active Users</span>
@@ -110,21 +111,19 @@
                         <span class="stat-number">4.8★</span>
                         <span class="stat-label">User Rating</span>
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="hero-image">
-                <!-- <img src="images/hero-extension.png" alt="AI Assistant Hub Extension" class="extension-preview"> -->
-                <div class="floating-card" id="card1">
-                    <i class="fas fa-magic"></i>
-                    <span>Smart Form Filling</span>
-                </div>
-                <div class="floating-card" id="card2">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Page Summarization</span>
-                </div>
-                <div class="floating-card" id="card3">
-                    <i class="fas fa-bolt"></i>
-                    <span>Instant Results</span>
+                <div class="hero-video-container">
+                    <div class="video-box">
+                        <iframe 
+                            id="hero-video"
+                            src="https://www.youtube.com/embed/UlkU6Ihz94Y?autoplay=1&mute=1&rel=0&modestbranding=1&controls=1&loop=1&playlist=UlkU6Ihz94Y&si=t6V9jUhf1lqCVOsP" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
                 </div>
             </div>
         </div>
@@ -177,19 +176,6 @@
                         <li>End-to-end encryption</li>
                         <li>No data storage</li>
                         <li>GDPR compliant</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Lightning Fast</h3>
-                    <p>Get results in seconds with our optimized AI processing. 
-                    No waiting, no delays - just instant productivity.</p>
-                    <ul class="feature-list">
-                        <li>Sub-second processing</li>
-                        <li>Optimized AI models</li>
-                        <li>Real-time results</li>
                     </ul>
                 </div>
             </div>
@@ -305,14 +291,15 @@
                     Everything you need to know about AI Assistant Hub
                 </p>
             </div>
-            <div class="faq-grid">
+            <div class="faq-container">
                 <div class="faq-item">
                     <div class="faq-question">
-                        <h3>How does AI Assistant Hub work?</h3>
+                        <h3>How does the AI form filling work?</h3>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        <p>AI Assistant Hub uses advanced AI to understand form fields and page content. Simply click the extension icon and let our AI handle the rest - from filling out forms to summarizing web pages.</p>
+                        <p>Our AI analyzes the form context and field labels to generate appropriate responses. 
+                        You can choose from different formality levels (Professional, Casual, Friendly) to match your needs.</p>
                     </div>
                 </div>
                 <div class="faq-item">
@@ -321,16 +308,8 @@
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        <p>Absolutely! We use industry-standard encryption and never store your personal information. All data is processed securely and deleted immediately after use.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <h3>What browsers are supported?</h3>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Currently, AI Assistant Hub is available for Chrome and Chromium-based browsers. We're working on support for Firefox and Safari.</p>
+                        <p>Yes! We use industry-standard encryption and don't store your personal information permanently. 
+                        Page content is processed but not saved. See our <a href="privacy-policy.html">Privacy Policy</a> for details.</p>
                     </div>
                 </div>
                 <div class="faq-item">
@@ -339,27 +318,142 @@
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        <p>Yes! You can cancel your Pro subscription at any time. You'll continue to have access until the end of your current billing period.</p>
+                        <p>Absolutely! You can cancel your Pro subscription anytime through your account settings. 
+                        You'll continue to have access until the end of your billing period.</p>
                     </div>
                 </div>
                 <div class="faq-item">
                     <div class="faq-question">
-                        <h3>How accurate is the AI?</h3>
+                        <h3>What websites does it work on?</h3>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        <p>Our AI is trained on millions of examples and achieves over 95% accuracy for form filling and content summarization. It continuously learns and improves with use.</p>
+                        <p>AI Assistant Hub works on any website with forms or content. 
+                        It's compatible with all major browsers and web applications.</p>
                     </div>
                 </div>
                 <div class="faq-item">
                     <div class="faq-question">
-                        <h3>What if I need help?</h3>
+                        <h3>How accurate are the AI suggestions?</h3>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="faq-answer">
-                        <p>We offer comprehensive support through our extension. Simply click the support button in the extension popup, and our team will get back to you within 24 hours.</p>
+                        <p>Our AI provides highly accurate suggestions based on context, but you should always review 
+                        and edit the content before submitting important forms.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="blog">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Latest Insights & Tips</h2>
+                <p class="section-description">
+                    Discover productivity hacks, AI insights, and web automation tips
+                </p>
+            </div>
+            <div class="blog-grid">
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <img src="images/blog-form-filling.jpg" alt="Smart Form Filling" loading="lazy">
+                        <div class="blog-category">Productivity</div>
+                    </div>
+                    <div class="blog-content">
+                        <h3>🚀 Master Smart Form Filling: Save Hours Every Week</h3>
+                        <p>Learn how AI-powered form filling can transform your productivity and eliminate repetitive typing tasks.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 5 min read</span>
+                            <span><i class="fas fa-calendar"></i> Dec 2024</span>
+                        </div>
+                        <a href="blog/smart-form-filling-guide.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <img src="images/blog-page-summarization.jpg" alt="Page Summarization" loading="lazy">
+                        <div class="blog-category">AI Insights</div>
+                    </div>
+                    <div class="blog-content">
+                        <h3>📚 Page Summarization: Extract Key Information Instantly</h3>
+                        <p>Discover how AI can help you quickly understand complex web content and research more efficiently.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 4 min read</span>
+                            <span><i class="fas fa-calendar"></i> Dec 2024</span>
+                        </div>
+                        <a href="blog/page-summarization-guide.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <img src="images/blog-privacy-security.jpg" alt="Privacy & Security" loading="lazy">
+                        <div class="blog-category">Security</div>
+                    </div>
+                    <div class="blog-content">
+                        <h3>🔒 Privacy & Security: Your Data Protection Guide</h3>
+                        <p>Understand how we keep your information secure and maintain your privacy while using AI tools.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 6 min read</span>
+                            <span><i class="fas fa-calendar"></i> Dec 2024</span>
+                        </div>
+                        <a href="blog/privacy-security-guide.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <img src="images/blog-chrome-extension.jpg" alt="Chrome Extension" loading="lazy">
+                        <div class="blog-category">Tutorial</div>
+                    </div>
+                    <div class="blog-content">
+                        <h3>⚡ Chrome Extension Setup: Get Started in 5 Minutes</h3>
+                        <p>Step-by-step guide to installing and configuring AI Assistant Hub for maximum productivity.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 3 min read</span>
+                            <span><i class="fas fa-calendar"></i> Dec 2024</span>
+                        </div>
+                        <a href="blog/chrome-extension-setup.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <img src="images/blog-ai-productivity.jpg" alt="AI Productivity" loading="lazy">
+                        <div class="blog-category">Productivity</div>
+                    </div>
+                    <div class="blog-content">
+                        <h3>🤖 AI Productivity Hacks: Work Smarter, Not Harder</h3>
+                        <p>Proven strategies to leverage AI automation and boost your daily productivity by 300%.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 7 min read</span>
+                            <span><i class="fas fa-calendar"></i> Dec 2024</span>
+                        </div>
+                        <a href="blog/ai-productivity-hacks.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <img src="images/blog-web-automation.jpg" alt="Web Automation" loading="lazy">
+                        <div class="blog-category">Automation</div>
+                    </div>
+                    <div class="blog-content">
+                        <h3>🔄 Web Automation: The Future of Digital Work</h3>
+                        <p>Explore how web automation is revolutionizing the way we work and interact with online content.</p>
+                        <div class="blog-meta">
+                            <span><i class="fas fa-clock"></i> 5 min read</span>
+                            <span><i class="fas fa-calendar"></i> Dec 2024</span>
+                        </div>
+                        <a href="blog/web-automation-future.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+            </div>
+            <div class="blog-cta">
+                <a href="blog/" class="btn btn-secondary">View All Blog Posts <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     </section>
@@ -482,6 +576,7 @@
                     <ul>
                         <li><a href="privacy-policy.html">Privacy Policy</a></li>
                         <li><a href="terms-of-service.html">Terms of Service</a></li>
+                        <li><a href="cookies.html">Cookie Policy</a></li>
                     </ul>
                 </div>
             </div>
@@ -492,12 +587,14 @@
         </div>
     </footer>
 
-    <!-- Video Modal -->
-    <div id="video-modal" class="video-modal">
-        <div class="video-modal-content">
-            <span class="video-modal-close">&times;</span>
+    <!-- Video Popup Modal -->
+    <div id="video-popup" class="video-popup">
+        <div class="video-popup-content">
+            <button class="video-popup-close" onclick="closeVideoPopup()">
+                <i class="fas fa-times"></i>
+            </button>
             <div class="video-container">
-                <iframe id="demo-video" 
+                <iframe id="video-iframe" 
                         src="" 
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -508,6 +605,6 @@
     </div>
 
     <!-- JavaScript -->
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=1.0.4"></script>
 </body>
 </html> 

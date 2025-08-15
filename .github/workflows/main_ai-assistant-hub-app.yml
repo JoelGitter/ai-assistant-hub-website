@@ -38,8 +38,13 @@ jobs:
           # Create a clean deployment directory with only necessary files
           mkdir -p deploy-package
           
-          # Copy only the files needed for deployment
+          # Copy website files for static hosting
+          cp -r website/ deploy-package/
+          
+          # Copy server files for backend functionality
           cp -r server/ deploy-package/
+          
+          # Copy package files
           cp -r package*.json deploy-package/ 2>/dev/null || true
           cp -r .env* deploy-package/ 2>/dev/null || true
           

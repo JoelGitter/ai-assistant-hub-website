@@ -89,41 +89,7 @@
         gap: var(--spacing-xl);
     }
     
-    .floating-card {
-        position: absolute;
-        font-size: 12px;
-        padding: 8px 12px;
-        opacity: 0.9;
-        z-index: 100;
-        display: flex;
-    }
-    
-    .card-1 {
-        top: 10%;
-        left: 5%;
-    }
-    
-    .card-2 {
-        top: 20%;
-        right: 5%;
-    }
-    
-    .card-3 {
-        top: 30%;
-        left: 10%;
-    }
-    
-    .card-4 {
-        top: 40%;
-        right: 10%;
-    }
-    
-    .card-5 {
-        top: 50%;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    
+  
     /* Features */
     .features-grid {
         grid-template-columns: 1fr;
@@ -215,16 +181,6 @@
         gap: var(--spacing-lg);
     }
     
-    .floating-card {
-        font-size: 0.7rem;
-        padding: var(--spacing-xs);
-        margin: 2px;
-    }
-    
-    .floating-card i {
-        font-size: 0.8em;
-    }
-    
     .feature-card {
         padding: var(--spacing-lg);
     }
@@ -268,40 +224,7 @@
         font-size: var(--font-size-sm);
     }
     
-    .floating-card {
-        position: absolute;
-        font-size: 11px;
-        padding: 6px 10px;
-        opacity: 0.8;
-        z-index: 100;
-        display: flex !important;
-    }
-    
-    .card-1 {
-        top: 5%;
-        left: 2%;
-    }
-    
-    .card-2 {
-        top: 15%;
-        right: 2%;
-    }
-    
-    .card-3 {
-        top: 25%;
-        left: 5%;
-    }
-    
-    .card-4 {
-        top: 35%;
-        right: 5%;
-    }
-    
-    .card-5 {
-        top: 45%;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+   
 }
 
 /* High DPI displays */
@@ -389,17 +312,6 @@
         background: #4b5563;
         border-color: var(--primary-color);
     }
-    
-    /* Fix floating cards in dark mode */
-    .floating-card {
-        background: rgba(255, 255, 255, 0.95) !important;
-        color: #1f2937 !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    }
-    
-    .floating-card i {
-        color: #6366f1 !important;
-    }
 }
 
 /* Focus styles for accessibility */
@@ -458,60 +370,5 @@
     .feature-card:hover,
     .pricing-card:hover {
         transform: none;
-    }
-}
-
-/* Force floating cards to always be visible - highest priority override */
-.floating-card,
-#card1,
-#card2,
-#card3 {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Override the specific rule you mentioned */
-@media (max-height: 600px) and (orientation: landscape) {
-    .floating-card,
-    #card1,
-    #card2,
-    #card3 {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-}
-
-/* Ultimate override - use attribute selectors for maximum specificity */
-div[class*="floating-card"],
-div[id*="card"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-@media (max-height: 600px) and (orientation: landscape) {
-    div[class*="floating-card"],
-    div[id*="card"] {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-}
-
-/* Override the problematic rule */
-@media (max-height: 600px) and (orientation: landscape) {
-    .floating-card {
-        display: none;
-    }
-}
-
-/* Immediately override it */
-@media (max-height: 600px) and (orientation: landscape) {
-    .floating-card {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
     }
 } 
