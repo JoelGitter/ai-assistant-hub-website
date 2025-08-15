@@ -148,7 +148,7 @@ If you didn't create an account with AI Assistant Hub, you can safely ignore thi
 
   } catch (error) {
     console.error('Error registering user:', error);
-    res.status(500).json({ error: 'Failed to register user' });
+    res.status(500).json({ error: 'Failed to register user' + error.message });
   }
 });
 
