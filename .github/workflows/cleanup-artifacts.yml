@@ -1,0 +1,52 @@
+name: Cleanup Old Artifacts
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write # Required to delete artifacts
+      contents: read
+
+    steps:
+      - name: Cleanup old artifacts
+        uses: actions/delete-artifact@v1
+        with:
+          name: node-app
+          retention-days: 1
+          skip-missing: true
+
+      - name: Cleanup old workflow runs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'main_ai-assistant-hub-app.yml',
+              status: 'completed',
+              per_page: 100
+            });
+            
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - 7); // Keep only last 7 days
+            
+            for (const run of runs.workflow_runs) {
+              if (new Date(run.created_at) < cutoffDate) {
+                try {
+                  await github.rest.actions.deleteWorkflowRun({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    run_id: run.id
+                  });
+                  console.log(`Deleted old workflow run: ${run.id}`);
+                } catch (error) {
+                  console.log(`Failed to delete run ${run.id}: ${error.message}`);
+                }
+              }
+            }

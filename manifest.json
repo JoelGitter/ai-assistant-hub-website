@@ -5,8 +5,7 @@
   "description": "Smart form filling and page summarization powered by AI. Save time with intelligent automation.",
   "permissions": [
     "storage",
-    "activeTab",
-    "scripting"
+    "tabs"
   ],
   "host_permissions": [
     "https://ai-assistant-hub-app.azurewebsites.net/*"

@@ -9,6 +9,10 @@ on:
       - main
   workflow_dispatch:
 
+# Add artifact retention to automatically clean up old artifacts
+env:
+  ARTIFACT_RETENTION_DAYS: 1  # Keep artifacts for only 1 day
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,11 +33,33 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
+      - name: Create deployment package
+        run: |
+          # Create a clean deployment directory with only necessary files
+          mkdir -p deploy-package
+          
+          # Copy only the files needed for deployment
+          cp -r server/ deploy-package/
+          cp -r package*.json deploy-package/ 2>/dev/null || true
+          cp -r .env* deploy-package/ 2>/dev/null || true
+          
+          # Remove unnecessary files to reduce size
+          find deploy-package -name "node_modules" -type d -exec rm -rf {} + 2>/dev/null || true
+          find deploy-package -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true
+          find deploy-package -name ".DS_Store" -type f -delete 2>/dev/null || true
+          find deploy-package -name "*.log" -type f -delete 2>/dev/null || true
+          find deploy-package -name "*.zip" -type f -delete 2>/dev/null || true
+          
+          echo "Deployment package created successfully"
+          du -sh deploy-package/
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: deploy-package/
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
+          if-no-files-found: error
 
   deploy:
     runs-on: ubuntu-latest

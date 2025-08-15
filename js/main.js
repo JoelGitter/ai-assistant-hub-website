@@ -1322,11 +1322,65 @@ window.utils = utils;
 function initHeroVideo() {
     const heroVideo = document.getElementById('hero-video');
     const videoBox = document.querySelector('.video-box');
+    const videoOverlay = document.getElementById('video-overlay');
+    const playButton = document.getElementById('play-video-btn');
     
     if (heroVideo && videoBox) {
-        // Add click to expand functionality
-        videoBox.addEventListener('click', function() {
-            openVideoPopup();
+        // Check if autoplay is supported and working
+        let autoplaySupported = true;
+        
+        // Listen for video load and check if it's playing
+        heroVideo.addEventListener('load', function() {
+            // Wait a bit to see if autoplay works
+            setTimeout(() => {
+                checkVideoPlayback();
+            }, 2000);
+        });
+        
+        // Function to check if video is actually playing
+        function checkVideoPlayback() {
+            if (videoOverlay && !videoOverlay.classList.contains('hidden')) {
+                // If overlay is still visible after 2 seconds, autoplay probably failed
+                autoplaySupported = false;
+                console.log('Autoplay not supported, showing play button');
+            }
+        }
+        
+        // Handle play button click
+        if (playButton) {
+            playButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent triggering video box click
+                
+                // Hide the overlay
+                if (videoOverlay) {
+                    videoOverlay.classList.add('hidden');
+                }
+                
+                // Try to play the video
+                if (heroVideo.contentWindow) {
+                    try {
+                        heroVideo.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                    } catch (e) {
+                        console.log('Manual play attempted for hero video');
+                    }
+                }
+                
+                // Track manual play event
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'video_play', {
+                        event_category: 'engagement',
+                        event_label: 'hero_video_manual_play',
+                        video_id: 'UlkU6Ihz94Y'
+                    });
+                }
+            });
+        }
+        
+        // Add click to expand functionality (only if not clicking play button)
+        videoBox.addEventListener('click', function(e) {
+            if (!playButton || !playButton.contains(e.target)) {
+                openVideoPopup();
+            }
         });
         
         // Add hover effects
@@ -1347,7 +1401,7 @@ function initHeroVideo() {
             gtag('event', 'video_view', {
                 event_category: 'engagement',
                 event_label: 'hero_video',
-                video_id: 'Yzy8v77TLxE'
+                video_id: 'UlkU6Ihz94Y'
             });
         }
     }
