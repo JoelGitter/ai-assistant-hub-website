@@ -17,7 +17,7 @@ jobs:
       - name: Cleanup old artifacts
         uses: actions/delete-artifact@v1
         with:
-          name: website-app
+          name: server-app
           retention-days: 1
           skip-missing: true
 
