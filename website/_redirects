@@ -1,5 +1,0 @@
-# Handle any potential redirects
-# This ensures the site works properly on Cloudflare Pages
-
-# If you need to redirect old URLs in the future, add them here
-# /old-page /new-page 301 
