@@ -1,0 +1,23 @@
+{
+  "name": "ai-assistant-hub-website",
+  "version": "1.0.0",
+  "description": "AI Assistant Hub - A comprehensive resource for AI browser assistants and automation tools",
+  "main": "index.html",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "echo 'Static website - open index.html in browser'",
+    "start": "echo 'Static website - open index.html in browser'"
+  },
+  "keywords": [
+    "ai",
+    "browser-assistant",
+    "automation",
+    "website"
+  ],
+  "author": "AI Assistant Hub",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JoelGitter/ai-assistant-hub-website.git"
+  }
+}
