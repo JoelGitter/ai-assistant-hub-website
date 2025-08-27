@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initLazyLoading();
     initVideoPopup(); // Add video popup initialization
     initHeroVideo(); // Add hero video initialization
+    initKeyboardShortcuts(); // Add keyboard shortcuts initialization
 });
 
 // Navigation functionality
@@ -138,7 +139,7 @@ function initScrollAnimations() {
     }, observerOptions);
 
     // Observe elements for animation
-    const animateElements = document.querySelectorAll('.feature-card, .pricing-card, .step, .faq-item');
+    const animateElements = document.querySelectorAll('.feature-card, .pricing-card, .step, .faq-item, .shortcut-card');
     animateElements.forEach(el => {
         el.classList.add('scroll-animate');
         observer.observe(el);
@@ -1486,4 +1487,110 @@ function closeVideoPopup() {
             event_label: 'demo_video'
         });
     }
-} 
+}
+
+// Keyboard Shortcuts Functionality
+function initKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // Check if user is not typing in an input field
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+            return;
+        }
+        
+        // Ctrl + Shift + S for Page Summarization
+        if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+            e.preventDefault();
+            triggerPageSummarization();
+        }
+        
+        // Ctrl + Shift + F for Smart Form Filling
+        if (e.ctrlKey && e.shiftKey && e.key === 'F') {
+            e.preventDefault();
+            triggerFormFilling();
+        }
+        
+        // Ctrl + Shift + X for Fact Checking
+        if (e.ctrlKey && e.shiftKey && e.key === 'X') {
+            e.preventDefault();
+            triggerFactChecking();
+        }
+    });
+}
+
+function triggerPageSummarization() {
+    // Show notification
+    showShortcutNotification('Page Summarization', 'Ctrl + Shift + S');
+    
+    // Track shortcut usage
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'shortcut_used', {
+            event_category: 'keyboard_shortcuts',
+            event_label: 'page_summarization'
+        });
+    }
+    
+    // Here you would typically trigger the actual page summarization functionality
+    console.log('Page Summarization triggered via keyboard shortcut');
+}
+
+function triggerFormFilling() {
+    // Show notification
+    showShortcutNotification('Smart Form Filling', 'Ctrl + Shift + F');
+    
+    // Track shortcut usage
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'shortcut_used', {
+            event_category: 'keyboard_shortcuts',
+            event_label: 'form_filling'
+        });
+    }
+    
+    // Here you would typically trigger the actual form filling functionality
+    console.log('Smart Form Filling triggered via keyboard shortcut');
+}
+
+function triggerFactChecking() {
+    // Show notification
+    showShortcutNotification('Fact Checking', 'Ctrl + Shift + X');
+    
+    // Track shortcut usage
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'shortcut_used', {
+            event_category: 'keyboard_shortcuts',
+            event_label: 'fact_checking'
+        });
+    }
+    
+    // Here you would typically trigger the actual fact checking functionality
+    console.log('Fact Checking triggered via keyboard shortcut');
+}
+
+function showShortcutNotification(action, shortcut) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'shortcut-notification';
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-keyboard"></i>
+            <span>${action} activated (${shortcut})</span>
+        </div>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Show notification
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Hide and remove notification
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}

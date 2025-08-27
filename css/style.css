@@ -562,6 +562,144 @@ p {
     font-weight: bold;
 }
 
+/* Keyboard Shortcuts Section */
+.keyboard-shortcuts {
+    padding: var(--spacing-3xl) 0;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    position: relative;
+}
+
+.keyboard-shortcuts::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23f3f4f6" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-xl);
+}
+
+.shortcut-card {
+    background: var(--bg-primary);
+    padding: var(--spacing-2xl);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.shortcut-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secondary-color);
+}
+
+.shortcut-card:hover .shortcut-icon {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+}
+
+.shortcut-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--secondary-color), #059669);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-lg);
+}
+
+.shortcut-icon i {
+    font-size: var(--font-size-xl);
+    color: white;
+}
+
+.shortcut-card h3 {
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+}
+
+.shortcut-key {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin: var(--spacing-md) 0;
+    border: 1px solid var(--border-color);
+    display: inline-block;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.shortcut-key::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+    transition: left var(--transition-slow);
+}
+
+.shortcut-card:hover .shortcut-key::before {
+    left: 100%;
+}
+
+.shortcut-card p {
+    color: var(--text-secondary);
+    margin-top: var(--spacing-md);
+}
+
+/* Shortcut Notifications */
+.shortcut-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    z-index: 10000;
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+    max-width: 300px;
+}
+
+.shortcut-notification.show {
+    transform: translateX(0);
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.notification-content i {
+    color: var(--secondary-color);
+    font-size: var(--font-size-lg);
+}
+
+.notification-content span {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
 /* How It Works Section */
 .how-it-works {
     padding: var(--spacing-3xl) 0;
