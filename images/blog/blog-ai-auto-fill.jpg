@@ -1,0 +1,12 @@
+<svg width="400" height="250" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="250" fill="url(#grad1)"/>
+  <circle cx="200" cy="125" r="60" fill="rgba(255,255,255,0.1)"/>
+  <text x="200" y="130" font-family="Arial, sans-serif" font-size="48" fill="white" text-anchor="middle">⏰</text>
+  <text x="200" y="200" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle">AI Auto-Fill</text>
+</svg>

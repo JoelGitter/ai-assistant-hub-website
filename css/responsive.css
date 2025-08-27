@@ -110,6 +110,67 @@
         padding: var(--spacing-xl);
     }
     
+    /* Blog */
+    .blog-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .blog-articles-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .blog-article-card {
+        padding: var(--spacing-xl);
+    }
+    
+    /* Blog Hero */
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-2xl);
+        text-align: center;
+    }
+    
+    .hero-stats {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .hero-visual {
+        height: 300px;
+    }
+    
+    /* Featured Hero */
+    .featured-hero-card {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .featured-hero-image {
+        height: 300px;
+    }
+    
+    .featured-hero-content {
+        padding: var(--spacing-2xl);
+    }
+    
+    /* Articles Masonry */
+    .articles-masonry {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+    }
+    
+    .article-card.featured {
+        grid-column: span 1;
+    }
+    
+    /* Newsletter */
+    .newsletter-form .input-group {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
     /* How It Works */
     .steps-container {
         grid-template-columns: 1fr;
@@ -196,6 +257,48 @@
     }
     
     .shortcut-card {
+        padding: var(--spacing-lg);
+    }
+    
+    /* Blog Articles Grid */
+    .blog-articles-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .blog-article-card {
+        padding: var(--spacing-lg);
+    }
+    
+    /* Blog Hero */
+    .hero-text h1 {
+        font-size: var(--font-size-3xl);
+    }
+    
+    .hero-subtitle {
+        font-size: var(--font-size-lg);
+    }
+    
+    .floating-cards {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .floating-card {
+        padding: var(--spacing-md);
+    }
+    
+    /* Featured Hero */
+    .featured-hero-content h2 {
+        font-size: var(--font-size-2xl);
+    }
+    
+    /* Articles */
+    .articles-header h2 {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .article-content {
         padding: var(--spacing-lg);
     }
     

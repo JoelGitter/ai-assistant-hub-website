@@ -1,0 +1,11 @@
+<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="200" fill="#f3f4f6"/>
+  <rect x="50" y="30" width="300" height="140" fill="#ffffff" stroke="#d1d5db" stroke-width="2"/>
+  <rect x="70" y="50" width="120" height="20" fill="#e5e7eb"/>
+  <rect x="70" y="80" width="120" height="20" fill="#e5e7eb"/>
+  <rect x="70" y="110" width="120" height="20" fill="#e5e7eb"/>
+  <rect x="220" y="50" width="100" height="20" fill="#6366f1"/>
+  <rect x="220" y="80" width="100" height="20" fill="#6366f1"/>
+  <rect x="220" y="110" width="100" height="20" fill="#6366f1"/>
+  <text x="200" y="180" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="14">Smart Form Filling</text>
+</svg>
