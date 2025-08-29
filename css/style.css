@@ -229,10 +229,11 @@ p {
 /* Hero Section */
 .hero {
     margin-top: 80px; /* Reduced from 100px to 80px */
-    padding: var(--spacing-3xl) 0;
+    padding: var(--spacing-4xl) 0;
     background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
     position: relative;
     overflow: hidden;
+    min-height: 80vh;
 }
 
 .hero-container {
@@ -247,7 +248,11 @@ p {
 
 .hero-content {
     z-index: 2;
-    padding-top: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+    padding-top: var(--spacing-2xl);
 }
 
 .hero-title {
@@ -282,7 +287,9 @@ p {
     position: relative;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    height: 100%;
+    padding-top: var(--spacing-2xl);
 }
 
 /* Hero Video Container */
@@ -290,6 +297,9 @@ p {
     width: 100%;
     max-width: 700px; /* Increased from 500px */
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
 
 .video-box {
@@ -301,6 +311,9 @@ p {
     background: #000;
     aspect-ratio: 16/9;
     min-height: 400px; /* Added minimum height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .video-box iframe {

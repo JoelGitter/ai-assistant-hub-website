@@ -62,13 +62,15 @@
     
     /* Hero Section */
     .hero {
-        padding: 100px 0 60px;
+        padding: 80px 0 60px;
+        min-height: auto;
     }
     
     .hero-container {
         grid-template-columns: 1fr;
         gap: var(--spacing-2xl);
         text-align: center;
+        align-items: start;
     }
     
     .hero-title {
